@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <form action="/createApp" method="post">
+      <input type="text" name="app_name" placeholder="Application Name"/>
+      <input type="text" name="display_string" placeholder="Display String"/>
+      <input type="submit" value="Create Application" />
+    </form>
+  </body>
+</html>
