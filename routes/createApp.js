@@ -18,10 +18,11 @@ router.post('/' , function (req, res, next) {
     var displayString = req.body.display_string;
 
     // Now lets create a project directory for the new app
+    var packageName = applicationName.replace(/\s/g,"")
     var mkDirCommand = 'mkdir ~/generatedProjects/'+"'"+applicationName+"'";
     var copyCommand = 'cp -R ~/Projects/AndroidStudioProjects/BaseApplication/* ~/generatedProjects/'+"'"+applicationName+"'";
     var deleteCommand =  'rm ~/generatedProjects/'+applicationName+"/app/src/main/AndroidManifest.xml";
-
+    var packageUpdateCommand = "find ~/generatedProjects/'"+applicationName+"'/ -type f -exec sed -i 's/com.developer.sparsh.baseapplication/com.amethyst.labs." + packageName + "/g' {} +"
 
     var mPromise = new Promise(function (resolve, reject) {
       
@@ -44,66 +45,19 @@ router.post('/' , function (req, res, next) {
 
     }).then(function(data){
       
-      // Read the manifest of the newly created application directory
-      console.log("Reading File......");
+      // Udate the package name everywhere
+      console.log("Updating package names......");
+      console.log(packageUpdateCommand);
       return new Promise(function(resolve,reject){
-        fs.readFile("/home/sparsh/generatedProjects/"+applicationName+"/app/src/main/AndroidManifest.xml",function(error,fileData){
-          if(error){
-            console.log("Error while reading file");
-            console.log(error);
-            reject(error);
-          }
-          resolve(fileData);
+        cmd.get(packageUpdateCommand,function(log){
+          console.log(log);
+          resolve(log);
         });
       });
-
-    }).then(function(fileData){
-    
-      // Parsing the xml to js
-      return new Promise(function(resolve,reject){
-        console.log("Parsing the Manifest...");
-        parser(fileData,function(error,result){
-          if(error){
-           console.log('error while parsing');
-           reject(error);
-          }
-          resolve(result);
-        });
-      });
-    
-    }).then(function(result){
-
-      console.log("Updating the Manifest");
-      // Update the package name
-      var modified = result;
-      modified.manifest.$.package = "amethyst.labs.dev." + applicationName.replace(/\s/g,"");
-      
-      var builder = new xml2js.Builder();
-      var modifiedXml = builder.buildObject(modified);
-      
-      return modifiedXml;
-    
-    }).then(function(modifiedXml){
-      
-      console.log("Removing Old Manifest files");
-      // Remove the original manifest
-      return new Promise(function(resolve,reject){
-        cmd.get(deleteCommand,function(log){
-          resolve(modifiedXml);
-        });
-      });
-    
-    }).then(function(modifiedXml){
-      
-      console.log("Write new Manifest");
-      // Write the new manifest
-      fs.writeFile("/home/sparsh/generatedProjects/"+applicationName+"/app/src/main/AndroidManifest.xml",modifiedXml,function(error){
-        if(error){
-          return console.log(error);
-        }
-        console.log("Write Successful");
-      });
+    }).then(function(log){
+      console.log("Successfully Updated");
     });
-});
+
+  });
 
 module.exports = router;
