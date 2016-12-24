@@ -19,10 +19,12 @@ router.post('/' , function (req, res, next) {
 
     // Now lets create a project directory for the new app
     var packageName = applicationName.replace(/\s/g,"")
+    
     var mkDirCommand = 'mkdir ~/generatedProjects/'+"'"+applicationName+"'";
     var copyCommand = 'cp -R ~/Projects/AndroidStudioProjects/BaseApplication/* ~/generatedProjects/'+"'"+applicationName+"'";
     var deleteCommand =  'rm ~/generatedProjects/'+applicationName+"/app/src/main/AndroidManifest.xml";
     var packageUpdateCommand = "find ~/generatedProjects/'"+applicationName+"'/ -type f -exec sed -i 's/com.developer.sparsh.baseapplication/com.amethyst.labs." + packageName + "/g' {} +"
+    var buildCommand = "gradle -p ~/generatedProjects/'"+applicationName+"'/" + " assembleDebug";
 
     var mPromise = new Promise(function (resolve, reject) {
       
@@ -47,17 +49,25 @@ router.post('/' , function (req, res, next) {
       
       // Udate the package name everywhere
       console.log("Updating package names......");
-      console.log(packageUpdateCommand);
       return new Promise(function(resolve,reject){
         cmd.get(packageUpdateCommand,function(log){
           console.log(log);
           resolve(log);
         });
       });
-    }).then(function(log){
-      console.log("Successfully Updated");
-    });
 
+    }).then(function(log){
+        console.log("Building Application.....");
+        // Now build the application
+        return new Promise(function(resolve,reject){
+          console.log(buildCommand);
+          cmd.get(buildCommand,function(log){
+            console.log("Application Built!!");
+            resolve();
+          });
+        });
+
+    });
   });
 
 module.exports = router;
