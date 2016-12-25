@@ -24,6 +24,7 @@ router.post('/' , function (req, res, next) {
     var copyCommand = 'cp -R ~/Projects/AndroidStudioProjects/BaseApplication/* ~/generatedProjects/'+"'"+applicationName+"'";
     var deleteCommand =  'rm ~/generatedProjects/'+applicationName+"/app/src/main/AndroidManifest.xml";
     var packageUpdateCommand = "find ~/generatedProjects/'"+applicationName+"'/ -type f -exec sed -i 's/com.developer.sparsh.baseapplication/com.amethyst.labs." + packageName + "/g' {} +"
+    var updateAppName = "sed -i "" "s#<string name="app_name">BaseApplication</string>#<string name="app_name">"+applicationName+"</string>#" ~/generatedProjects/'+applicationName+"/app/src/main/res/values/strings.xml";
     var buildCommand = "gradle -p ~/generatedProjects/'"+applicationName+"'/" + " assembleDebug";
 
     var mPromise = new Promise(function (resolve, reject) {
@@ -56,6 +57,17 @@ router.post('/' , function (req, res, next) {
         });
       });
 
+    }).then(function(data){
+          
+      // Udate the app name in strings.xml
+      console.log("Updating App Name......");
+      return new Promise(function(resolve,reject){
+        cmd.get(updateAppName,function(log){
+          console.log(log);
+          resolve(log);
+        });
+      });
+          
     }).then(function(log){
         console.log("Building Application.....");
         // Now build the application
