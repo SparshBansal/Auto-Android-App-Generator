@@ -10,6 +10,10 @@
     <form action="/createApp" method="post">
       <input type="text" name="app_name" placeholder="Application Name"/>
       <input type="text" name="display_string" placeholder="Display String"/>
+      <select name="navigation_type">
+        <option value="sliding_tab">Sliding Tab Layout</option>
+        <option value="navigation_drawer">Navigation Drawer</option>
+      </select>
       <input type="submit" value="Create Application" />
     </form>
   </body>
