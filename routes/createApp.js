@@ -13,6 +13,10 @@ var fs = require('fs');
 
 var router = express.Router();
 
+router.get('/',function(req,res,next){
+  return res.render('createApp.ejs',{});
+});
+
 router.post('/' , function (req, res, next) {
     var applicationName = req.body.app_name;
     var displayString = req.body.display_string;

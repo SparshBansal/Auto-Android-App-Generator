@@ -4,17 +4,18 @@
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-    <form action="/createApp" method="post">
-      <input type="text" name="app_name" placeholder="Application Name"/>
-      <input type="text" name="display_string" placeholder="Display String"/>
-      <select name="navigation_type">
-        <option value="sliding_tab">Sliding Tab Layout</option>
-        <option value="navigation_drawer">Navigation Drawer</option>
-      </select>
-      <input type="submit" value="Create Application" />
-    </form>
+  <body> 
+    <button value="Sign In" onclick="signIn()">Sign In</button>
+    <button value="Sign up" onclick="signUp()">Sign Up</button>
   </body>
+  <script type="text/javascript">
+    function signIn(){
+      var url = '/login';
+      window.location = url;
+    }
+    function signUp(){
+      var url = '/signup';
+      window.location = url;
+    }
+  </script>
 </html>
