@@ -19,6 +19,23 @@
 		console.log("Id : " , profile.getId());
 		console.log("Name : ", profile.getName());
 		console.log("Email: ",profile.getEmail());
+		
+		var id_token = googleUser.getAuthResponse().id_token;
+
+		// Send the id token to the backend server
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST','/login/google');
+		xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+
+		// The response contains the redirection page
+		xhr.onload = function(){
+			var data = JSON.parse(xhr.responseText);
+			if(data.redirect){
+				window.location = data.redirect;
+			}
+		}
+		var params = 'idtoken='+id_token + "&username=username&password=password"; 
+		xhr.send(params);
 	}
 </script>
 </body>
