@@ -6,6 +6,7 @@
   </head>
   <body>
     <h1>Create your Application</h1>
+    <p>Welcome <%= user.username %></p>
     <form action="/createApp" method="post">
       <input type="text" name="app_name" placeholder="Application Name"/>
       <input type="text" name="display_string" placeholder="Display String"/>

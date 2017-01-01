@@ -18,7 +18,6 @@ exports.localAuth = function(email,password){
 					resolve(null);
 				}
 				else{
-					console.log("Successfull");
 					resolve(result);
 				}
 			});

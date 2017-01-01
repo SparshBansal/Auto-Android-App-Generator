@@ -13,8 +13,15 @@ var fs = require('fs');
 
 var router = express.Router();
 
+router.use(function(req,res,next){
+  if(req.isAuthenticated()){
+    return next();
+  }
+  res.redirect('/');
+});
+
 router.get('/',function(req,res,next){
-  return res.render('createApp.ejs',{});
+  return res.render('createApp.ejs',{user : req.user});
 });
 
 router.post('/' , function (req, res, next) {
