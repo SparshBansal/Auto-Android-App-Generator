@@ -12,8 +12,6 @@ var session = require("express-session")({
 });
 
 var passport = require('passport');
-var LocalStrategy = require('passport-local');
-var authenticate = require('./authentication');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -45,51 +43,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session);
 
 //===================PASSPORT=========================
-passport.use('local-login',new LocalStrategy({usernameField : 'email',passwordField : 'password'},
-	function(username,password,done){
-		authenticate.localAuth(username,password).then(function(result){
-			if(!result){
-				console.log("Could not login!!");
-				done(null,result);
-			}
-			if(result){
-				console.log("Suucessfully logged in!!!");
-				done(null,result);
-			}
-		}).catch(function(error){
-			console.log(error.body);
-	});
-}));
-
-passport.use('local-signup',new LocalStrategy({passReqToCallback : true , usernameField : 'email' , passwordField : 'password'}	,
-	function(req,username,password,done){
-
-	var details = req.body;
-	authenticate.localRegistration(details).then(function(result){
-		if(!result){
-			console.log("Could not register!!");
-			done(null, result);
-		}
-		else{
-			console.log("Successfully registered!!");
-			done(null,result);
-		}
-	}).catch(function(error){
-		console.log(error.body);
-	});
-
-}));
-
-passport.serializeUser(function(user,done){
-	console.log("Serializing!!");
-	done(null,user);
-});
-
-passport.deserializeUser(function(obj,done){
-	console.log("Deserializing!!");
-	done(null,obj);
-});
-
+require('./config/passport')(passport);
 
 app.use(passport.initialize());
 app.use(passport.session());

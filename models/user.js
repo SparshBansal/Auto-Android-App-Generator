@@ -2,16 +2,41 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
 var userSchema = mongoose.Schema({
-	username : {type:String , required : true},
-	password : {type:String},
-	email : {type : String},
-	mobile : {type : String}
+	local : {
+		username : String,
+		password : String,
+		email : String,
+		mobile :  String
+	},
+	facebook         : {
+        id           : String,
+        token        : String,
+        email        : String,
+        name         : String
+    },
+    twitter          : {
+        id           : String,
+        token        : String,
+        displayName  : String,
+        username     : String
+    },
+    google           : {
+        id           : String,
+        token        : String,
+        email        : String,
+        name         : String
+    }
 });
 
 var SALT_FACTOR = 10;
 var noop = function(){};
 
-userSchema.pre('save' , function(done){
+// Generate the hash
+userSchema.methods.generateHash = function(password){
+	return bcrypt.hashSync(password , bcrypt.genSaltSync(SALT_FACTOR) , null);
+}
+
+/*userSchema.pre('save' , function(done){
 	var user = this;	
 	bcrypt.genSalt(SALT_FACTOR,function(error,salt){
 		if(error){
@@ -25,12 +50,11 @@ userSchema.pre('save' , function(done){
 			done();
 		});
 	});
-});
+});*/
 
-userSchema.methods.checkPassword = function(guess,done){
-	bcrypt.compare(guess,this.password,function(error,isMatch){
-		done(error,isMatch);
-	});
+// Comparing the passwords 
+userSchema.methods.checkPassword = function(password){
+	return bcrypt.compareSync(password,this.local.password);
 };
 
 module.exports = mongoose.model('user',userSchema);
