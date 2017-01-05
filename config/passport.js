@@ -1,4 +1,5 @@
 var LocalStrategy = require('passport-local').Strategy;
+var GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 var User = require('../models/user');
 var configAuth = require('./auth');
@@ -119,71 +120,30 @@ module.exports = function(passport){
 	// =========================================================================
     // GOOGLE ==================================================================
     // =========================================================================
-    passport.use('local-google' , new LocalStrategy({
-
-    	passReqToCallback : true
-
-    },function(req,username,password,done){
-    	var id_token = req.body.idtoken;
-
-    	var auth = new GoogleAuth();
-    	var client = new auth.OAuth2(configAuth.google.clientId,configAuth.google.clientSecret,"");
-
-    	var payloadPromise = new Promise(function(resolve,reject){
-    		client.verifyIdToken(id_token,configAuth.google.clientId,function(error,login){
-	    		if(error){
-	    			reject(error);
-	    		}
-	    		else{
-	    			var payload = login.getPayload();
-    				resolve(payload);
-    			}
-    		});
-  	  	}).catch(function(error){
-  	  		console.log(error.body);
-  	  	});
-  		
-  		var userPromise = payloadPromise.then(function(payload){
-
-	    	return User.findOne({'google.id' : payload.sub}).exec();
-
-  		}).catch(function(error){
-  			console.log(error.body);
-  		});
-
-  		Promise.all([payloadPromise,userPromise]).then(function(results){
-  			var payload = results[0];
-  			var user = results[1];
-
-  			var token = id_token;
-
-  			var id = payload.sub;
-  			var name = payload.name;
-  			var email = payload.email;
-
-  			console.log(payload);
-
-  			if(user){
+    passport.use('google' , new GoogleStrategy({
+    	clientID : configAuth.google.clientId,
+    	clientSecret : configAuth.google.clientSecret,
+    	callbackURL : configAuth.google.callbackUrl
+    },function(token, refreshToken, profile, done){
+    	User.findOne({'google.id' : profile.id}).exec().then(function(user){
+    		if(user){
     			return user;
     		}
-    		if(!user){
+    		else{
     			var newUser = new User();
     			
-    			newUser.google.id = id;
-    			newUser.google.token = token;
-    			newUser.google.email = email;
-    			newUser.google.name = name;
+    			newUser.google.id    = profile.id;
+                newUser.google.token = token;
+                newUser.google.name  = profile.displayName;
+                newUser.google.email = profile.emails[0].value;
 
-    			return newUser.save();
+                return newUser.save();
     		}
-
-  		}).then(function(user){
-  			if(user){
-  				return done(null,user);
-  			}
-  			else{
-  				return done(null,false);
-  			}
-  		}).catch();
+    	}).then(function(user){
+    		return done(null,user);
+    	}).catch(function(error){
+    		console.log(error);
+    		return done(error);
+    	});
     }));
 };

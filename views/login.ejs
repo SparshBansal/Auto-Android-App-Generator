@@ -2,8 +2,6 @@
 <html>
 <head>
 	<title>Login</title>
-	<script type="text/javascript" src = "https://apis.google.com/js/platform.js" async defer></script>
-	<meta charset="utf-8" name="google-signin-client_id" content="674011120507-oq1uj8qq2cq8p8845capmqf9n6cdil85.apps.googleusercontent.com">
 </head>
 <body>
 <h1>Login</h1>
@@ -12,32 +10,8 @@
 	<input type="password" name="password" placeholder="Password">
 	<input type="submit">
 </form>
-<div class="g-signin2" data-onSuccess = "onSignIn"></div>
-<script type="text/javascript">
-
-	function onSignIn(googleUser){
-		var profile = googleUser.getBasicProfile();
-		console.log("Id : " , profile.getId());
-		console.log("Name : ", profile.getName());
-		console.log("Email: ",profile.getEmail());
-		
-		var id_token = googleUser.getAuthResponse().id_token;
-
-		// Send the id token to the backend server
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST','/login/google');
-		xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-
-		// The response contains the redirection page
-		xhr.onload = function(){
-			var data = JSON.parse(xhr.responseText);
-			if(data.redirect){
-				window.location = data.redirect;
-			}
-		}
-		var params = 'idtoken='+id_token + "&username=username&password=password"; 
-		xhr.send(params);
-	}
-</script>
+<form action="/login/google" method="GET">
+	<input type="submit" value="Google Login">
+</form>
 </body>
 </html>
