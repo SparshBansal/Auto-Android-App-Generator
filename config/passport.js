@@ -71,9 +71,7 @@ module.exports = function(passport){
 				}
 
 			}).catch(function(error){
-				
 				console.log(error.body);
-			
 			});	
 		}
 	));
@@ -186,4 +184,14 @@ module.exports = function(passport){
   			}
   		}).catch();
     }));
+
+    // ===========================================================================
+    // FACEBOOK ==================================================================
+    // ===========================================================================
+    passport.use('local-facebook' , new LocalStrategy({
+    	passReqToCallback : true
+    },function(req,username,password,done){
+    	console.log(req.body.accessToken);
+    }));
 };
+

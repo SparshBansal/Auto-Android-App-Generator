@@ -6,38 +6,42 @@
 	<meta charset="utf-8" name="google-signin-client_id" content="674011120507-oq1uj8qq2cq8p8845capmqf9n6cdil85.apps.googleusercontent.com">
 </head>
 <body>
+
+<!-- Facebook SDK loading script -->
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1696267447331070',
+      xfbml      : true,
+      version    : 'v2.8'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<!-- =============== LOCAL LOGIN FORM =================== -->
 <h1>Login</h1>
 <form action="/login" method="POST">
 	<input type="text" name="email" placeholder="Email">
 	<input type="password" name="password" placeholder="Password">
 	<input type="submit">
 </form>
+
+<!-- =========== GOOGLE LOGIN BUTTON ================ -->
 <div class="g-signin2" data-onSuccess = "onSignIn"></div>
-<script type="text/javascript">
 
-	function onSignIn(googleUser){
-		var profile = googleUser.getBasicProfile();
-		console.log("Id : " , profile.getId());
-		console.log("Name : ", profile.getName());
-		console.log("Email: ",profile.getEmail());
-		
-		var id_token = googleUser.getAuthResponse().id_token;
+<!-- ============== FACEBOOK LOGIN BUTTON ================== -->
+<fb:login-button scope="public_profile,email" onlogin="checkFacebookLoginState();">
+</fb:login-button>
 
-		// Send the id token to the backend server
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST','/login/google');
-		xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-
-		// The response contains the redirection page
-		xhr.onload = function(){
-			var data = JSON.parse(xhr.responseText);
-			if(data.redirect){
-				window.location = data.redirect;
-			}
-		}
-		var params = 'idtoken='+id_token + "&username=username&password=password"; 
-		xhr.send(params);
-	}
-</script>
+<script type="text/javascript" src = "javascripts/script.login.js"></script>
 </body>
 </html>

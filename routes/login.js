@@ -12,6 +12,7 @@ router.post('/',passport.authenticate('local-login',{
 	failureFlash : true
 }));
 
+// Google Sign In Routes
 router.post('/google', passport.authenticate('local-google'), function(req,res){
 	if(req.isAuthenticated()){
 		return res.send({redirect : '/createApp'});
@@ -19,6 +20,14 @@ router.post('/google', passport.authenticate('local-google'), function(req,res){
 	else{
 		return res.send({redirect : '/login'});
 	}
+});
+
+// Facebook Sign In Routes
+router.post('/facebook',function(req,res,next){
+	console.log("Received Request");
+	next();
+},passport.authenticate('local-facebook'),function(req,res){
+
 });
 
 module.exports = router;
