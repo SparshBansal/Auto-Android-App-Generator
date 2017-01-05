@@ -8,24 +8,7 @@
 <body>
 
 <!-- Facebook SDK loading script -->
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '1696267447331070',
-      xfbml      : true,
-      version    : 'v2.8'
-    });
-    FB.AppEvents.logPageView();
-  };
 
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
 
 <!-- =============== LOCAL LOGIN FORM =================== -->
 <h1>Login</h1>
@@ -39,9 +22,9 @@
 <div class="g-signin2" data-onSuccess = "onSignIn"></div>
 
 <!-- ============== FACEBOOK LOGIN BUTTON ================== -->
-<fb:login-button scope="public_profile,email" onlogin="checkFacebookLoginState();">
-</fb:login-button>
-
+<form action="/login/Facebook" method="GET">
+	<input type="submit" value="Facebook Login">
+</form>
 <script type="text/javascript" src = "javascripts/script.login.js"></script>
 </body>
 </html>

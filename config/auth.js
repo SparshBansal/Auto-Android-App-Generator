@@ -7,6 +7,7 @@ module.exports = {
 
 	'facebook' : {
 		'appId' : '1696267447331070',
-		'appSecret' : '83efba9f6f051055bf6722cfaa534dee' 
+		'appSecret' : '83efba9f6f051055bf6722cfaa534dee' ,
+		'callbackUrl' : 'http://localhost:3000/login/facebook/callback'
 	}
 };

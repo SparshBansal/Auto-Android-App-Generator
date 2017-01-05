@@ -23,11 +23,11 @@ router.post('/google', passport.authenticate('local-google'), function(req,res){
 });
 
 // Facebook Sign In Routes
-router.post('/facebook',function(req,res,next){
-	console.log("Received Request");
-	next();
-},passport.authenticate('local-facebook'),function(req,res){
+router.get('/facebook',passport.authenticate('facebook' , {scope : 'email'}));
 
-});
+router.get('/facebook/callback',passport.authenticate('facebook',{
+	successRedirect : '/createApp',
+	failureRedirect : '/login'
+}));
 
 module.exports = router;
