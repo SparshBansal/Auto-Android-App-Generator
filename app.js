@@ -17,6 +17,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var login = require('./routes/login');
 var signup = require('./routes/signup');
+var api = require('./api/v1');
 
 var createApp = require('./routes/createApp');
 
@@ -55,6 +56,7 @@ app.use('/signup', signup);
 
 app.use('/createApp',createApp);
 
+app.use('/api/v1' , api);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
