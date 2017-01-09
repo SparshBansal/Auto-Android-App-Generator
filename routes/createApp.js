@@ -5,6 +5,9 @@ var express = require('express');
 var cmd = require('node-cmd');
 var fs = require('fs');
 
+// import the models
+var Application = require('../models/application');
+
 var router = express.Router();
 
 router.use(function(req,res,next){
@@ -21,35 +24,55 @@ router.get('/',function(req,res,next){
 router.post('/' , function (req, res, next) {
 
     var applicationName = req.body.app_name;
-    var displayString = req.body.display_string;
-    var navigation_type = req.body.navigation_type;
+    var packageName = applicationName.replace(/\s/g,"")
+    
 
     var sourceProjectDirectory = "~/Projects/AndroidStudioProjects/BaseApplication/";
     var destinationDirectory = "~/generatedProjects/";
     var projectDir = "/home/sparsh/generatedProjects/"+applicationName;
-    var packageName = applicationName.replace(/\s/g,"")
+
+    // Insert Details to Database...
+    // Parse the application details...
+
+    console.log("Saving data");
+
+    var displayString = req.body.display_string;
+    var navigation_type = req.body.navigation_type;
+
+    var details = {};
+
+    // Put the details in the details object
+    details.text = displayString;
+    details.nav_type = navigation_type;
+
+    // Insert application data..
+    var userId = req.user._id;
+
+    var newApplication = new Application({
+      
+      name : applicationName,
+      adminId : userId,
+      package : packageName,
+      properties : details
+
+    });
+
+    newApplication.save().then(function(application){  /* Constructing the application now */
     
-      
-    var mPromise = new Promise(function (resolve, reject) {
-      // Run initialization Script!!!
-      cmd.get('./shell_scripts/initialize_project.sh ' + sourceProjectDirectory + " " + destinationDirectory + " \"" + applicationName + "\"",function(data){
-        console.log(data);
-        resolve(data);
+      return new Promise(function(resolve,reject){
+
+        console.log("Running initialization script");
+        // Run initialization Script!!!
+        cmd.get('./shell_scripts/initialize_project.sh ' + sourceProjectDirectory + " " + destinationDirectory + " \"" + applicationName + "\"",function(data){
+          console.log(data);
+          resolve(application);
+        });
+    
       });
-      
-    }).then(function(data){
 
-      // Add the asset file to the application
-      var textObj = {};
-      
-      textObj.text = displayString;
+    }).then(function(application){
 
-      if(navigation_type === 'sliding_tab')
-        textObj.nav_type = 'sliding_tab'
-      else if (navigation_type === 'navigation_drawer')
-        textObj.nav_type = 'navigation_drawer'
-
-      var stringToWrite = JSON.stringify(textObj);
+      var stringToWrite = JSON.stringify(application.properties);
 
       return new Promise(function(resolve,reject){
         fs.writeFile(projectDir+"/app/src/main/assets/data.json" , stringToWrite , function(error){
@@ -57,11 +80,11 @@ router.post('/' , function (req, res, next) {
             console.log("error",error);
             reject(error);
           }
-          resolve();
+          resolve(application);
         });
       });
 
-    }).then(function(log){
+    }).then(function(application){
       
       // Run copy_replace script
       return new Promise(function(resolve,reject){
@@ -69,10 +92,10 @@ router.post('/' , function (req, res, next) {
         var destinationFile = projectDir + '/app/src/main/res/layout/activity_main.xml';
         var sourceFile = "";
       
-        if(navigation_type === 'sliding_tab'){
+        if(application.properties.nav_type === 'sliding_tab'){
           sourceFile = "~/XML/activity_main_slidingtabs.xml";
         }
-        else if(navigation_type === 'navigation_drawer'){
+        else if(application.properties.nav_type === 'navigation_drawer'){
           sourceFile = "~/XML/activity_main_navbar.xml";
         }
 
@@ -89,6 +112,10 @@ router.post('/' , function (req, res, next) {
             console.log(log);
           });
         });
+    }).catch(function(error){
+
+      console.log(error);
+    
     });
   });
 
