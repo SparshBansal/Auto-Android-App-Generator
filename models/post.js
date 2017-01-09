@@ -7,6 +7,7 @@ var postSchema = Schema({
 	mimeType : {type : String},
 	locationUri : {type : String},
 	description : {type : String},
+	likes : {type : Number},
 	comments : []
 });
 
