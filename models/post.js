@@ -5,6 +5,7 @@ var postSchema = Schema({
 	appId : {type : Schema.Types.ObjectId , required : true},
 	userId : {type : Schema.Types.ObjectId , required : true},
 	mimeType : {type : String},
+	createdAt : {type : Date, default: Date.now },
 	locationUri : {type : String},
 	description : {type : String},
 	likes : {type : Number},
