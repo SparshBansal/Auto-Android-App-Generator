@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body> 
-    <button value="Sign In" onclick="signIn()">Sign In</button>
-    <button value="Sign up" onclick="signUp()">Sign Up</button>
-  </body>
-  <script type="text/javascript">
-    function signIn(){
-      var url = '/login';
-      window.location = url;
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+</head>
+<body>
+<button value="Sign In" onclick="signIn()">Sign In</button>
+<button value="Sign up" onclick="signUp()">Sign Up</button>
+</body>
+<script type="text/javascript">
+    function signIn() {
+        var url = '/login';
+        window.location = url;
     }
-    function signUp(){
-      var url = '/signup';
-      window.location = url;
+    function signUp() {
+        var url = '/signup';
+        window.location = url;
     }
-  </script>
+</script>
 </html>

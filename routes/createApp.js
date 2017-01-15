@@ -10,26 +10,26 @@ var Application = require('../models/application');
 
 var router = express.Router();
 
-router.use(function(req,res,next){
-  if(req.isAuthenticated()){
-    return next();
-  }
-  res.redirect('/');
+router.use(function (req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/');
 });
 
-router.get('/',function(req,res,next){
-  return res.render('createApp.ejs',{user : req.user});
+router.get('/', function (req, res, next) {
+    return res.render('createApp.ejs', {user: req.user});
 });
 
-router.post('/' , function (req, res, next) {
+router.post('/', function (req, res, next) {
 
     var applicationName = req.body.app_name;
-    var packageName = applicationName.replace(/\s/g,"")
-    
+    var packageName = applicationName.replace(/\s/g, "")
+
 
     var sourceProjectDirectory = "~/Projects/AndroidStudioProjects/BaseApplication/";
     var destinationDirectory = "~/generatedProjects/";
-    var projectDir = "/home/sparsh/generatedProjects/"+applicationName;
+    var projectDir = "/home/sparsh/generatedProjects/" + applicationName;
 
     // Insert Details to Database...
     // Parse the application details...
@@ -49,74 +49,74 @@ router.post('/' , function (req, res, next) {
     var userId = req.user._id;
 
     var newApplication = new Application({
-      
-      name : applicationName,
-      adminId : userId,
-      package : packageName,
-      properties : details
+
+        name: applicationName,
+        adminId: userId,
+        package: packageName,
+        properties: details
 
     });
 
-    newApplication.save().then(function(application){  /* Constructing the application now */
-    
-      return new Promise(function(resolve,reject){
+    newApplication.save().then(function (application) {  /* Constructing the application now */
 
-        console.log("Running initialization script");
-        // Run initialization Script!!!
-        cmd.get('./shell_scripts/initialize_project.sh ' + sourceProjectDirectory + " " + destinationDirectory + " \"" + applicationName + "\"",function(data){
-          console.log(data);
-          resolve(application);
+        return new Promise(function (resolve, reject) {
+
+            console.log("Running initialization script");
+            // Run initialization Script!!!
+            cmd.get('./shell_scripts/initialize_project.sh ' + sourceProjectDirectory + " " + destinationDirectory + " \"" + applicationName + "\"", function (data) {
+                console.log(data);
+                resolve(application);
+            });
+
         });
-    
-      });
 
-    }).then(function(application){
+    }).then(function (application) {
 
-      var stringToWrite = JSON.stringify(application.properties);
+        var stringToWrite = JSON.stringify(application.properties);
 
-      return new Promise(function(resolve,reject){
-        fs.writeFile(projectDir+"/app/src/main/assets/data.json" , stringToWrite , function(error){
-          if(error){
-            console.log("error",error);
-            reject(error);
-          }
-          resolve(application);
+        return new Promise(function (resolve, reject) {
+            fs.writeFile(projectDir + "/app/src/main/assets/data.json", stringToWrite, function (error) {
+                if (error) {
+                    console.log("error", error);
+                    reject(error);
+                }
+                resolve(application);
+            });
         });
-      });
 
-    }).then(function(application){
-      
-      // Run copy_replace script
-      return new Promise(function(resolve,reject){
-      
-        var destinationFile = projectDir + '/app/src/main/res/layout/activity_main.xml';
-        var sourceFile = "";
-      
-        if(application.properties.nav_type === 'sliding_tab'){
-          sourceFile = "~/XML/activity_main_slidingtabs.xml";
-        }
-        else if(application.properties.nav_type === 'navigation_drawer'){
-          sourceFile = "~/XML/activity_main_navbar.xml";
-        }
+    }).then(function (application) {
 
-        cmd.get("./shell_scripts/copy_replace_script.sh " + sourceFile + " " + destinationFile , function(log){
-          resolve(log);
+        // Run copy_replace script
+        return new Promise(function (resolve, reject) {
+
+            var destinationFile = projectDir + '/app/src/main/res/layout/activity_main.xml';
+            var sourceFile = "";
+
+            if (application.properties.nav_type === 'sliding_tab') {
+                sourceFile = "~/XML/activity_main_slidingtabs.xml";
+            }
+            else if (application.properties.nav_type === 'navigation_drawer') {
+                sourceFile = "~/XML/activity_main_navbar.xml";
+            }
+
+            cmd.get("./shell_scripts/copy_replace_script.sh " + sourceFile + " " + destinationFile, function (log) {
+                resolve(log);
+            });
         });
-      });
 
-    }).then(function(log){
+    }).then(function (log) {
 
         // Run build_app script to finally build the application
-        return new Promise(function(resolve , reject){
-          cmd.get("./shell_scripts/build_app.sh " + projectDir , function(log){
-            console.log(log);
-          });
+        return new Promise(function (resolve, reject) {
+            cmd.get("./shell_scripts/build_app.sh " + projectDir, function (log) {
+                console.log(log);
+            });
         });
-    }).catch(function(error){
+    }).catch(function (error) {
 
-      console.log(error);
-    
+        console.log(error);
+
     });
-  });
+});
 
 module.exports = router;
