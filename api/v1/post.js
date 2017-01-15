@@ -30,3 +30,4 @@ router.post('/',function(req,res){
 	})
 
 })
+express.exports = router;
