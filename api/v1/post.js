@@ -11,9 +11,35 @@ router.post("/", function (req, res) {
 
     form.parse(req, function (error, fields, files) {
         if (!error) {
-            console.log(fields);
-            console.log(files);
-            return res.json({message : "Files and fields recieved"});
+
+            // Get the fields
+            let appId = fields.appId;
+            let userId = fields.userId;
+            let mimeType = fields.mimeType;
+            let timestamp = fields.timeStamp;
+            let description = fields.description;
+
+            // Get the path to the resource
+            let locationUri = files.path;
+
+            let newPost = new post();
+
+            newPost.appId = appId;
+            newPost.userId = userId;
+            newPost.mimeType = mimeType;
+            newPost.timestamp = timestamp;
+            newPost.description = description;
+            newPost.locationUri = locationUri;
+
+            console.log(newPost);
+
+            newPost.save().then(function(post){
+               if(post){
+                   return res.json({"message" : "Successfully posted"});
+               }
+            }).catch(function (error) {
+                return res.json({"message":"some error occurred"});
+            });
         }
     });
 });
