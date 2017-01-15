@@ -7,12 +7,8 @@ var commentSchema = Schema({
     postId: {type: Schema.Types.ObjectId},
     comment: {type: String, required: true},
     timestamp: {type: Date, default: Date.now()},
-    likes: {type: []
-]},
-reply : {
-    type : []
-}
-})
-;
+    likes: {type: []},
+	reply : {type : []}
+	});
 
 module.exports = mongoose.model('comment', commentSchema);

@@ -3,15 +3,7 @@ var Schema = mongoose.Schema;
 
 var likesSchema = Schema
 {
-    userId : {
-        type : Schema.type.ObjectId
-    }
-,
-    appId : {
-        type : Schema.type.ObjectId
-    }
-,
-    postId : {
-        type : Schema.type.ObjectId
-    }
+    userId : {type : Schema.type.ObjectId},
+    appId : {type : Schema.type.ObjectId},
+    postId : {type : Schema.type.ObjectId}
 }
