@@ -1,12 +1,12 @@
-var LocalStrategy = require('passport-local').Strategy;
-var GoogleStrategy = require('passport-google-oauth2').Strategy;
+let LocalStrategy = require('passport-local').Strategy;
+let GoogleStrategy = require('passport-google-oauth2').Strategy;
 
-var FacebookStrategy = require('passport-facebook').Strategy;
+let FacebookStrategy = require('passport-facebook').Strategy;
 
-var User = require('../models/user');
-var configAuth = require('./auth');
+let User = require('../models/user');
+let configAuth = require('./auth');
 
-var GoogleAuth = require('google-auth-library');
+let GoogleAuth = require('google-auth-library');
 
 module.exports = function (passport) {
     // =========================================================================
@@ -39,12 +39,10 @@ module.exports = function (passport) {
         },
 
         // Authentication function
-        function (req, username, password, done) {
+        function (req, email, password, done) {
 
-            var username = req.body.username;
-            var password = req.body.password;
-            var email = req.body.email;
-            var mobile = req.body.mobile;
+            let username = req.body.username;
+            let mobile = req.body.mobile;
 
             User.findOne({'local.email': email}).exec().then(function (result) {
 
@@ -56,7 +54,7 @@ module.exports = function (passport) {
                 else {
                     console.log("No existing user");
                     // No existing user with this email , create one
-                    var newUser = new User();
+                    let newUser = new User();
 
                     newUser.local.username = username;
                     newUser.local.password = newUser.generateHash(password);
@@ -130,7 +128,7 @@ module.exports = function (passport) {
                 return user;
             }
             else {
-                var newUser = new User();
+                let newUser = new User();
 
                 newUser.google.id = profile.id;
                 newUser.google.token = token;
@@ -163,7 +161,7 @@ module.exports = function (passport) {
                 return user;
             }
             else {
-                var newUser = new User();
+                let newUser = new User();
 
                 console.log(profile);
 

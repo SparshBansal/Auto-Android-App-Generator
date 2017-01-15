@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt-nodejs');
+let mongoose = require('mongoose');
+let bcrypt = require('bcrypt-nodejs');
 
-var userSchema = mongoose.Schema({
+let userSchema = mongoose.Schema({
     local: {
         username: String,
         password: String,
@@ -28,8 +28,8 @@ var userSchema = mongoose.Schema({
     }
 });
 
-var SALT_FACTOR = 10;
-var noop = function () {
+let SALT_FACTOR = 10;
+let noop = function () {
 };
 
 // Generate the hash
@@ -38,7 +38,7 @@ userSchema.methods.generateHash = function (password) {
 }
 
 /*userSchema.pre('save' , function(done){
- var user = this;
+ let user = this;
  bcrypt.genSalt(SALT_FACTOR,function(error,salt){
  if(error){
  return done(error);

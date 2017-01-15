@@ -1,20 +1,35 @@
-var express = require('express');
-var post = require('../../models/post');
+let express = require('express');
+let formidable = require('formidable');
 
-var router = express.router();
+let post = require('../../models/post');
 
-router.post('/', function (req, res) {
+let router = express.Router();
 
-    var timeStamp = req.body.timeStamp;
-    var appId = req.body.appId;
+router.post("/", function (req, res) {
+    // use formidable to parse the contents and the post file
+    let form = formidable.IncomingForm();
 
-    var query = post.find({'appId': appId}).where('timeStamp').gt(timeStamp).sort('timeStamp');
+    form.parse(req, function (error, fields, files) {
+        if (!error) {
+            console.log(fields);
+            console.log(files);
+            return res.json({message : "Files and fields recieved"});
+        }
+    });
+});
+
+router.get('/', function (req, res) {
+
+    let timeStamp = req.body.timeStamp;
+    let appId = req.body.appId;
+
+    let query = post.find({'appId': appId}).where('timeStamp').gt(timeStamp).sort('timeStamp');
 
     query.exec(function (err, post) {
         // if(err)return handleError(err);
         jsonObj = [];
-        for (var i = 0; i < post.length; i++) {
-            postItem = {};
+        for (let i = 0; i < post.length; i++) {
+            let postItem = {};
             postItem['appId'] = post[i]['appId'];
             postItem['userId'] = post[i]['userId'];
             postItem['mimeType'] = post[i]['mimeType'];
@@ -27,4 +42,5 @@ router.post('/', function (req, res) {
         return res.json(jsonObj);
     });
 });
-express.exports = router;
+
+module.exports = router;

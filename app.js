@@ -1,30 +1,30 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+let express = require('express');
+let path = require('path');
+let favicon = require('serve-favicon');
+let logger = require('morgan');
+let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
 
-var session = require("express-session")({
+let session = require("express-session")({
     secret: "TKRv0IJs=HYqrvagQ#&!F!%V]Ww/4KiVs$s,<<MX",
     resave: true,
     saveUninitialized: true
 });
 
-var passport = require('passport');
+let passport = require('passport');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
-var login = require('./routes/login');
-var signup = require('./routes/signup');
-var api = require('./api/v1');
+let index = require('./routes/index');
+let users = require('./routes/users');
+let login = require('./routes/login');
+let signup = require('./routes/signup');
+let api = require('./api/v1');
 
-var createApp = require('./routes/createApp');
+let createApp = require('./routes/createApp');
 
 
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
-var app = express();
+let app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -59,7 +59,7 @@ app.use('/createApp', createApp);
 app.use('/api/v1', api);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    var err = new Error('Not Found');
+    let err = new Error('Not Found');
     err.status = 404;
     next(err);
 });

@@ -1,16 +1,17 @@
-var express = require('express');
-var type = require('./loginType');
+let express = require('express');
+let type = require('./loginType');
 
-var User = require('../../models/user');
+let User = require('../../models/user');
 
-var router = express.Router();
+let router = express.Router();
 
 router.post('/', function (req, res) {
 
     console.log(req.body);
 
-    var loginType = req.body.type;
-    var username = req.body.key_username;
+    let loginType = req.body.type;
+    let username = req.body.key_username;
+    let profileId;
 
     switch (loginType) {
 
@@ -21,7 +22,7 @@ router.post('/', function (req, res) {
                     return res.json({'message': 'Login Unsucessful , Invalid Email ID', 'statusCode': 400});
                 }
                 else if (user) {
-                    var password = req.body.key_password;
+                    let password = req.body.key_password;
                     if (user.checkPassword(password)) {
                         console.log("Logged In");
                         return res.json({'message': 'Login Successful', 'statusCode': 200, '_id': user._id});
@@ -38,16 +39,16 @@ router.post('/', function (req, res) {
 
         // Handle google login
         case type.google:
-            var profileId = req.body.profileId;
+            profileId = req.body.profileId;
             User.findOne({'google.id': profileId}).exec().then(function (user) {
                 if (user) {
                     return user;
                 }
                 else {
 
-                    var accessToken = req.body.accessToken;
+                    let accessToken = req.body.accessToken;
 
-                    var newUser = newUser();
+                    let newUser = newUser();
                     newUser.google.name = username;
                     newUser.google.email = email;
                     newUser.google.token = accessToken;
@@ -64,16 +65,16 @@ router.post('/', function (req, res) {
 
         // Handle Facebook Login
         case type.facebook:
-            var profileId = req.body.profileId;
+            profileId = req.body.id;
             User.findOne({'facebook.id': profileId}).exec().then(function (user) {
                 if (user) {
                     return user;
                 }
                 else {
 
-                    var accessToken = req.body.accessToken;
+                    let accessToken = req.body.accessToken;
 
-                    var newUser = newUser();
+                    let newUser = newUser();
                     newUser.facebook.name = username;
                     newUser.facebook.email = email;
                     newUser.facebook.token = accessToken;

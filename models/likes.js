@@ -1,17 +1,8 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
 
-var likesSchema = Schema
-{
-    userId : {
-        type : Schema.type.ObjectId
-    }
-,
-    appId : {
-        type : Schema.type.ObjectId
-    }
-,
-    postId : {
-        type : Schema.type.ObjectId
-    }
-}
+let likesSchema = Schema({
+    userId: {type: Schema.type.ObjectId},
+    appId: {type: Schema.type.ObjectId},
+    postId: {type: Schema.type.ObjectId}
+});

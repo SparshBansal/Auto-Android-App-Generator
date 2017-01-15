@@ -1,14 +1,14 @@
 /**
  * Created by sparsh on 10/12/16.
  */
-var express = require('express');
-var cmd = require('node-cmd');
-var fs = require('fs');
+let express = require('express');
+let cmd = require('node-cmd');
+let fs = require('fs');
 
 // import the models
-var Application = require('../models/application');
+let Application = require('../models/application');
 
-var router = express.Router();
+let router = express.Router();
 
 router.use(function (req, res, next) {
     if (req.isAuthenticated()) {
@@ -23,32 +23,32 @@ router.get('/', function (req, res, next) {
 
 router.post('/', function (req, res, next) {
 
-    var applicationName = req.body.app_name;
-    var packageName = applicationName.replace(/\s/g, "")
+    let applicationName = req.body.app_name;
+    let packageName = applicationName.replace(/\s/g, "")
 
 
-    var sourceProjectDirectory = "~/Projects/AndroidStudioProjects/BaseApplication/";
-    var destinationDirectory = "~/generatedProjects/";
-    var projectDir = "/home/sparsh/generatedProjects/" + applicationName;
+    let sourceProjectDirectory = "~/Projects/AndroidStudioProjects/BaseApplication/";
+    let destinationDirectory = "~/generatedProjects/";
+    let projectDir = "/home/sparsh/generatedProjects/" + applicationName;
 
     // Insert Details to Database...
     // Parse the application details...
 
     console.log("Saving data");
 
-    var displayString = req.body.display_string;
-    var navigation_type = req.body.navigation_type;
+    let displayString = req.body.display_string;
+    let navigation_type = req.body.navigation_type;
 
-    var details = {};
+    let details = {};
 
     // Put the details in the details object
     details.text = displayString;
     details.nav_type = navigation_type;
 
     // Insert application data..
-    var userId = req.user._id;
+    let userId = req.user._id;
 
-    var newApplication = new Application({
+    let newApplication = new Application({
 
         name: applicationName,
         adminId: userId,
@@ -72,7 +72,7 @@ router.post('/', function (req, res, next) {
 
     }).then(function (application) {
 
-        var stringToWrite = JSON.stringify(application.properties);
+        let stringToWrite = JSON.stringify(application.properties);
 
         return new Promise(function (resolve, reject) {
             fs.writeFile(projectDir + "/app/src/main/assets/data.json", stringToWrite, function (error) {
@@ -89,8 +89,8 @@ router.post('/', function (req, res, next) {
         // Run copy_replace script
         return new Promise(function (resolve, reject) {
 
-            var destinationFile = projectDir + '/app/src/main/res/layout/activity_main.xml';
-            var sourceFile = "";
+            let destinationFile = projectDir + '/app/src/main/res/layout/activity_main.xml';
+            let sourceFile = "";
 
             if (application.properties.nav_type === 'sliding_tab') {
                 sourceFile = "~/XML/activity_main_slidingtabs.xml";

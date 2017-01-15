@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
 
-var postSchema = Schema({
+let postSchema = Schema({
     appId: {type: Schema.Types.ObjectId, required: true},
     userId: {type: Schema.Types.ObjectId, required: true},
     mimeType: {type: String},

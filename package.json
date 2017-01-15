@@ -13,6 +13,7 @@
     "ejs": "~2.5.2",
     "express": "~4.14.0",
     "express-session": "^1.14.0",
+    "formidable": "^1.0.17",
     "google-auth-library": "^0.10.0",
     "mongodb": "^2.2.5",
     "mongoose": "^4.5.8",

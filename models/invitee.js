@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
 
-var inviteeSchema = Schema({
+let inviteeSchema = Schema({
 
     appId: {type: Schema.Types.ObjectId},
     inviteeId: {type: Schema.Types.ObjectId},

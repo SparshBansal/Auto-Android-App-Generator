@@ -1,8 +1,8 @@
-var express = require('express');
-var passport = require('passport');
-var mongoose = require('mongoose');
+let express = require('express');
+let passport = require('passport');
+let mongoose = require('mongoose');
 
-var router = express.Router();
+let router = express.Router();
 
 router.get('/', function (req, res, next) {
     res.render('signup.ejs', {});

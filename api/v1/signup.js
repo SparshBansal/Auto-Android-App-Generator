@@ -1,14 +1,14 @@
-var express = require('express');
-var User = require('../../models/user');
+let express = require('express');
+let User = require('../../models/user');
 
-var router = express.Router();
+let router = express.Router();
 
 router.post('/', function (req, res) {
 
-    var email = req.body.email;
-    var username = req.body.username;
-    var password = req.body.password;
-    var mobile = req.body.mobile;
+    let email = req.body.email;
+    let username = req.body.username;
+    let password = req.body.password;
+    let mobile = req.body.mobile;
 
     User.findOne({'local.email': email}).exec().then(function (user) {
         if (user) {
@@ -16,7 +16,7 @@ router.post('/', function (req, res) {
             return null;
         }
         else {
-            var newUser = new User();
+            let newUser = new User();
 
             newUser.local.email = email;
             newUser.local.username = username;

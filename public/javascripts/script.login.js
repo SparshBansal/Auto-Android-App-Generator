@@ -4,7 +4,7 @@ function sendDataToServer(endpoint , params , callback){
 	}
 
 	// Send the params to the backend server
-	var xhr = new XMLHttpRequest();
+	let xhr = new XMLHttpRequest();
 	xhr.open('POST',endpoint);
 	xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
 	xhr.onload = callback;
@@ -17,20 +17,20 @@ function sendDataToServer(endpoint , params , callback){
 
 // Send the google access token to the backend server for validation and confirmation
 /*function onGoogleSignIn(googleUser){
-	var profile = googleUser.getBasicProfile();
+	let profile = googleUser.getBasicProfile();
 	console.log("Id : " , profile.getId());
 	console.log("Name : ", profile.getName());
 	console.log("Email: ",profile.getEmail());
 	
-	var id_token = googleUser.getAuthResponse().id_token;
+	let id_token = googleUser.getAuthResponse().id_token;
 	
-	var callback = function(xhr){
-		var data = JSON.parse(xhr.responseText);
+	let callback = function(xhr){
+		let data = JSON.parse(xhr.responseText);
 		if(data.redirect){
 			window.location = data.redirect;
 		}
 	}
-	var params = 'idtoken='+id_token + "&username=username&password=password"; 
+	let params = 'idtoken='+id_token + "&username=username&password=password"; 
 	sendDataToServer('/login/google',params,callback);
 }*/
 
@@ -41,17 +41,17 @@ function sendDataToServer(endpoint , params , callback){
 // Send the facebook access token to the backend server for validation
 function onFacebookSignIn(response){
 	
-	var authResponse = response.authResponse;
-	var access_token = authResponse.accessToken;
+	let authResponse = response.authResponse;
+	let access_token = authResponse.accessToken;
 
-	var callback = function(xhr){
-		var data = JSON.parse(xhr.responseText);
+	let callback = function(xhr){
+		let data = JSON.parse(xhr.responseText);
 		if(data.redirect){
 			window.location = data.redirect;
 		}
 	};
 
-	var params = "accessToken="+access_token+"&username=username&password=password";
+	let params = "accessToken="+access_token+"&username=username&password=password";
 	sendDataToServer('/login/facebook',params,callback);
 }
 
