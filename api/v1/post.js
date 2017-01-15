@@ -1,7 +1,10 @@
+
 let express = require('express');
 let formidable = require('formidable');
 
 let post = require('../../models/post');
+let likes = require('../../models/likes');
+let comments = require('../../models/comment');
 
 let router = express.Router();
 
@@ -33,12 +36,12 @@ router.post("/", function (req, res) {
 
             console.log(newPost);
 
-            newPost.save().then(function(post){
-               if(post){
-                   return res.json({"message" : "Successfully posted"});
-               }
+            newPost.save().then(function (post) {
+                if (post) {
+                    return res.json({"message": "Successfully posted"});
+                }
             }).catch(function (error) {
-                return res.json({"message":"some error occurred"});
+                return res.json({"message": "some error occurred"});
             });
         }
     });
@@ -62,7 +65,33 @@ router.get('/', function (req, res) {
             postItem['timeStamp'] = post[i]['timeStamp'];
             postItem['locationUri'] = post[i]['locationUri'];
             postItem['description'] = post[i]['description'];
-            postItem['likes'] = post[i]['likes'];
+
+            var likesQuery = likes.find({'appId': post[i]['appId']}).where('postId').equals(post[i]['_id']);
+            likesQuery.select('userId');
+            likesQuery.exec().then(function (result) {
+                postItem['likes'] = result;
+                return new Promise(function (resolve, reject) {
+                    resolve(post[i]);
+                });
+
+            }).then(function (post) {
+                var commentsQuery = comments.find({'appId': post[i]['appId']}).where('postId').equals(post[i]['_id']);
+                commentsQuery.exec().then(function (result) {
+                    var comments = [];
+                    for (var i = 0; i < result.length; i++) {
+                        var commentItem = {};
+                        commentItem['userId'] = result[i]['userId'];
+                        commentItem['appId'] = result[i]['appId'];
+                        commentItem['postId'] = result[i]['postId'];
+                        commentItem['comment'] = result[i]['comment'];
+                        commentItem['timestamp'] = result[i]['timestamp'];
+                        comments.push(commentItem);
+                    }
+                    post['comments'] = comments;
+                });
+
+            });
+
             jsonObj.push(postItem);
         }
         return res.json(jsonObj);

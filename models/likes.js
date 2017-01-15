@@ -6,3 +6,5 @@ let likesSchema = Schema({
     appId: {type: Schema.type.ObjectId},
     postId: {type: Schema.type.ObjectId}
 });
+
+module.exports = likesSchema;

@@ -8,7 +8,7 @@ let postSchema = Schema({
     timeStamp: {type: Number},
     locationUri: {type: String},
     description: {type: String},
-    likes: {type: Number},
+    likes: {type: []},
     comments: []
 });
 
