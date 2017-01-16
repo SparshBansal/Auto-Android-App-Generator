@@ -6,7 +6,7 @@ let router = express.Router();
 
 router.use('/login', loginRouter);
 router.use('/signup', signupRouter);
-router.use('fetchpost', fetchPostRouter);
+router.use('/post', fetchPostRouter);
 
 
 module.exports = router;

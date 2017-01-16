@@ -15,6 +15,9 @@ router.post("/", function (req, res) {
     form.parse(req, function (error, fields, files) {
         if (!error) {
 
+            console.log(fields);
+            console.log(files);
+
             // Get the fields
             let appId = fields.appId;
             let userId = fields.userId;
@@ -23,7 +26,7 @@ router.post("/", function (req, res) {
             let description = fields.description;
 
             // Get the path to the resource
-            let locationUri = files.path;
+            let locationUri = files.picture.path;
 
             let newPost = new post();
 
@@ -66,7 +69,7 @@ router.get('/', function (req, res) {
             postItem['locationUri'] = post[i]['locationUri'];
             postItem['description'] = post[i]['description'];
 
-            var likesQuery = likes.find({'appId': post[i]['appId']}).where('postId').equals(post[i]['_id']);
+            let likesQuery = likes.find({'appId': post[i]['appId']}).where('postId').equals(post[i]['_id']);
             likesQuery.select('userId');
             likesQuery.exec().then(function (result) {
                 postItem['likes'] = result;
@@ -75,11 +78,11 @@ router.get('/', function (req, res) {
                 });
 
             }).then(function (post) {
-                var commentsQuery = comments.find({'appId': post[i]['appId']}).where('postId').equals(post[i]['_id']);
+                let commentsQuery = comments.find({'appId': post[i]['appId']}).where('postId').equals(post[i]['_id']);
                 commentsQuery.exec().then(function (result) {
-                    var comments = [];
-                    for (var i = 0; i < result.length; i++) {
-                        var commentItem = {};
+                    let comments = [];
+                    for (let i = 0; i < result.length; i++) {
+                        let commentItem = {};
                         commentItem['userId'] = result[i]['userId'];
                         commentItem['appId'] = result[i]['appId'];
                         commentItem['postId'] = result[i]['postId'];
