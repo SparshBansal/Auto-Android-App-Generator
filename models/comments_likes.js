@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
 
-var comments_Likes_schema = Schema({
+let comments_Likes_schema = Schema({
     userId: {type: Schema.Types.ObjectId},
     appId: {type: Schema.Types.ObjectId},
     commentId: {type: Schema.Types.ObjectId},

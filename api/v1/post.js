@@ -1,10 +1,10 @@
-
 let express = require('express');
 let formidable = require('formidable');
+let bluebird = require('bluebird');
 
-let post = require('../../models/post');
-let likes = require('../../models/likes');
-let comments = require('../../models/comment');
+let Post = require('../../models/post');
+let Likes = require('../../models/likes');
+let Comments = require('../../models/comment');
 
 let router = express.Router();
 
@@ -28,7 +28,7 @@ router.post("/", function (req, res) {
             // Get the path to the resource
             let locationUri = files.picture.path;
 
-            let newPost = new post();
+            let newPost = new Post();
 
             newPost.appId = appId;
             newPost.userId = userId;
@@ -55,50 +55,33 @@ router.get('/', function (req, res) {
     let timeStamp = req.body.timeStamp;
     let appId = req.body.appId;
 
-    let query = post.find({'appId': appId}).where('timeStamp').gt(timeStamp).sort('timeStamp');
+    // Use generator functions for getting posts and comments and likes
+    function *getPosts(appId) {
 
-    query.exec(function (err, post) {
-        // if(err)return handleError(err);
-        jsonObj = [];
-        for (let i = 0; i < post.length; i++) {
-            let postItem = {};
-            postItem['appId'] = post[i]['appId'];
-            postItem['userId'] = post[i]['userId'];
-            postItem['mimeType'] = post[i]['mimeType'];
-            postItem['timeStamp'] = post[i]['timeStamp'];
-            postItem['locationUri'] = post[i]['locationUri'];
-            postItem['description'] = post[i]['description'];
+        // Get the posts array based on app id
+        let posts = yield Post.find({appId: appId, timeStamp: {$lt: timeStamp}}).sort({timeStamp: 1}).exec();
 
-            let likesQuery = likes.find({'appId': post[i]['appId']}).where('postId').equals(post[i]['_id']);
-            likesQuery.select('userId');
-            likesQuery.exec().then(function (result) {
-                postItem['likes'] = result;
-                return new Promise(function (resolve, reject) {
-                    resolve(post[i]);
-                });
+        // Map the post array to an array of promises each querying for comments
+        let commentsPromises = posts.map(function (post, idx) {
+            return Comments.find({appId: appId, postId: post._id}).exec();
+        });
 
-            }).then(function (post) {
-                let commentsQuery = comments.find({'appId': post[i]['appId']}).where('postId').equals(post[i]['_id']);
-                commentsQuery.exec().then(function (result) {
-                    let comments = [];
-                    for (let i = 0; i < result.length; i++) {
-                        let commentItem = {};
-                        commentItem['userId'] = result[i]['userId'];
-                        commentItem['appId'] = result[i]['appId'];
-                        commentItem['postId'] = result[i]['postId'];
-                        commentItem['comment'] = result[i]['comment'];
-                        commentItem['timestamp'] = result[i]['timestamp'];
-                        comments.push(commentItem);
-                    }
-                    post['comments'] = comments;
-                });
+        // Get the comments from commentsPromises
+        let comments = yield Promise.all(commentsPromises);
 
-            });
+        // Map the post array to likesPromises array similar to comments promises array
+        let likesPromises = posts.map(function (post, idx) {
+            return Likes.find({appId: appId, postId: post._id}).exec();
+        });
 
-            jsonObj.push(postItem);
-        }
-        return res.json(jsonObj);
-    });
+        // Get the likes from likesPromises
+        let likes = yield Promise.all(likesPromises);
+
+        // Now merge the results from the arrays
+        // TODO -- Return the merged results back as json
+    }
+
+    bluebird.coroutine(getPosts);
 });
 
 module.exports = router;

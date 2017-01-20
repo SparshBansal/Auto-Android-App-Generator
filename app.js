@@ -21,8 +21,8 @@ let api = require('./api/v1');
 
 let createApp = require('./routes/createApp');
 
-
 let mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 
 let app = express();
 
