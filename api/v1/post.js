@@ -77,7 +77,20 @@ router.get('/', function (req, res) {
         let likes = yield Promise.all(likesPromises);
 
         // Now merge the results from the arrays
-        // TODO -- Return the merged results back as json
+        let responseArray = posts.map(function (post, idx) {
+           return {
+               userId : post.userId,
+               mimeType : post.mimeType,
+               timeStamp : post.timeStamp,
+               locationUri : post.locationUri,
+               description : post.description,
+               comments : comments[idx],
+               likes : likes[idx]
+           };
+        });
+
+        return res.json(responseArray);
+
     })();
 });
 
