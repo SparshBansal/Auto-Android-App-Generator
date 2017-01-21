@@ -35,23 +35,7 @@ let noop = function () {
 // Generate the hash
 userSchema.methods.generateHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(SALT_FACTOR), null);
-}
-
-/*userSchema.pre('save' , function(done){
- let user = this;
- bcrypt.genSalt(SALT_FACTOR,function(error,salt){
- if(error){
- return done(error);
- }
- bcrypt.hash(user.password,salt,noop,function(error,hashedPassword){
- if(error){
- done(error);
- }
- user.password = hashedPassword;
- done();
- });
- });
- });*/
+};
 
 // Comparing the passwords 
 userSchema.methods.checkPassword = function (password) {
