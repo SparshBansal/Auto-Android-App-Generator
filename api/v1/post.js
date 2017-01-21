@@ -56,8 +56,7 @@ router.get('/', function (req, res) {
     let appId = req.body.appId;
 
     // Use generator functions for getting posts and comments and likes
-    function *getPosts(appId) {
-
+    bluebird.coroutine(function *(){
         // Get the posts array based on app id
         let posts = yield Post.find({appId: appId, timeStamp: {$lt: timeStamp}}).sort({timeStamp: 1}).exec();
 
@@ -79,9 +78,7 @@ router.get('/', function (req, res) {
 
         // Now merge the results from the arrays
         // TODO -- Return the merged results back as json
-    }
-
-    bluebird.coroutine(getPosts);
+    })();
 });
 
 module.exports = router;
