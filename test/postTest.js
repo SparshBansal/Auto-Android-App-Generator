@@ -26,7 +26,7 @@ describe("post", function () {
             fs.readFileAsync("C:\\Users\\SPARSH\\Desktop\\image.jpg").then(function (file) {
                 chai.request(server)
                     .post('/api/v1/post')
-                    .set('content-type' , "multipart/form-data")
+                    .set('content-type', "multipart/form-data")
 
                     // Attach the test file
                     .attach("postData", file, "cool_image")
@@ -49,5 +49,53 @@ describe("post", function () {
                     });
             });
         });
+
+        it("It should post the post without multimedia to the database", function (done) {
+
+            let post = {
+                appId: mongoose.Types.ObjectId(),
+                userId: mongoose.Types.ObjectId(),
+                mimeType: "text",
+                timestamp: Date.now().toString(),
+                description: "Here is a text post"
+            };
+
+            chai.request(server)
+                .post('/api/v1/post')
+                .send(post)
+                // Send the request
+                .end(function (error, res) {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property("message");
+                    res.body.message.should.be.eql("Successfully posted");
+
+                    done();
+                });
+        });
+
+        it("It should not post the post without appId to the database", function (done) {
+
+            let post = {
+                userId: mongoose.Types.ObjectId(),
+                mimeType: "text",
+                timestamp: Date.now().toString(),
+                description: "Here is a text post"
+            };
+
+            chai.request(server)
+                .post('/api/v1/post')
+                .send(post)
+                // Send the request
+                .end(function (error, res) {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property("message");
+                    res.body.message.should.be.eql("Some error occurred");
+
+                    done();
+                });
+        });
+
     });
 });
