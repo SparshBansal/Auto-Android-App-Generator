@@ -1,6 +1,7 @@
 let express = require('express');
 let formidable = require('formidable');
 let bluebird = require('bluebird');
+let type = require('type-is');
 
 let Post = require('../../models/post');
 let Likes = require('../../models/likes');
@@ -14,11 +15,11 @@ router.post("/", function (req, res, next) {
     // this is a plain post request without any multimedia data , if it is a multipart request
     // then we let the next route handler handle this request.
 
-    let contentType = req.get("Content-Type");
+    let contentType = type(req , ['multipart/*']);
 
-    if (contentType !== "multipart/form-data") {
-
+    if (contentType !== 'multipart/form-data') {
         bluebird.coroutine(function *() {
+
             let newPost = parsePostData(req.body);
             let savedPost = yield savePost(newPost);
 
@@ -47,9 +48,13 @@ router.post("/", function (req, res, next) {
             locationUri = files.postData.path;
 
         newPost.locationUri = locationUri;
-        let savedPost = yield savePost(newPost);
-
-        return sendResult(res , savedPost);
+        try {
+            let savedPost = yield savePost(newPost);
+            return sendResult(res , savedPost);
+        }
+        catch(e) {
+            console.log(e);
+        }
     })();
 
 });
@@ -114,7 +119,6 @@ function parsePostData(object) {
     newPost.mimeType = mimeType;
     newPost.timestamp = timestamp;
     newPost.description = description;
-    newPost.locationUri = locationUri;
 
     return newPost;
 }
@@ -147,7 +151,7 @@ function parseForm(req) {
 
 function sendResult(res,post){
     if(post){
-        res.json({message : "Successfully Posted"});
+        res.json({message : "Successfully posted"});
     }
     else{
         res.json({message : "Some error occurred"});
