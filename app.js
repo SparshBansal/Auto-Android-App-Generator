@@ -4,6 +4,8 @@ let favicon = require('serve-favicon');
 let logger = require('morgan');
 let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
+let config = require('config');
+
 
 let session = require("express-session")({
     secret: "TKRv0IJs=HYqrvagQ#&!F!%V]Ww/4KiVs$s,<<MX",
@@ -19,6 +21,7 @@ let login = require('./routes/login');
 let signup = require('./routes/signup');
 let api = require('./api/v1');
 
+
 let createApp = require('./routes/createApp');
 
 let mongoose = require('mongoose');
@@ -31,11 +34,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // Enable mongoose
-mongoose.connect('mongodb://localhost:27017/aapgDb');
+mongoose.connect(config.DBHost);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+if(config.util.getEnv('NODE_ENV') !== 'test') {
+    app.use(logger('dev'));
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
@@ -44,7 +49,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session);
 
 //===================PASSPORT=========================
-require('./config/passport')(passport);
+require('./authorization/passport')(passport);
 
 app.use(passport.initialize());
 app.use(passport.session());
