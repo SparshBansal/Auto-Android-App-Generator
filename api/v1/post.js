@@ -8,46 +8,50 @@ let Comments = require('../../models/comment');
 
 let router = express.Router();
 
-router.post("/", function (req, res) {
-    // use formidable to parse the contents and the post file
-    let form = formidable.IncomingForm();
+router.post("/", function (req, res, next) {
 
-    form.parse(req, function (error, fields, files) {
-        if (!error) {
+    // Check the Content-Type of post , if the Content-Type is not multipart-form data then
+    // this is a plain post request without any multimedia data , if it is a multipart request
+    // then we let the next route handler handle this request.
 
-            console.log(fields);
-            console.log(files);
+    let contentType = req.get("Content-Type");
 
-            // Get the fields
-            let appId = fields.appId;
-            let userId = fields.userId;
-            let mimeType = fields.mimeType;
-            let timestamp = fields.timeStamp;
-            let description = fields.description;
+    if (contentType !== "multipart/form-data") {
 
-            // Get the path to the resource
-            let locationUri = files.picture.path;
+        bluebird.coroutine(function *() {
+            let newPost = parsePostData(req.body);
+            let savedPost = yield savePost(newPost);
 
-            let newPost = new Post();
+            return sendResult(res,savedPost);
+        })();
+    }
+    else {
+        // Content-Type is multipart/form-data forward to the next handler
+        next();
+    }
 
-            newPost.appId = appId;
-            newPost.userId = userId;
-            newPost.mimeType = mimeType;
-            newPost.timestamp = timestamp;
-            newPost.description = description;
-            newPost.locationUri = locationUri;
+}, function (req, res) {
 
-            console.log(newPost);
+    bluebird.coroutine(function *() {
+        let fieldsNFiles = yield parseForm(req);
 
-            newPost.save().then(function (post) {
-                if (post) {
-                    return res.json({"message": "Successfully posted"});
-                }
-            }).catch(function (error) {
-                return res.json({"message": "some error occurred"});
-            });
-        }
-    });
+        let fields = fieldsNFiles.fields;
+        let files = fieldsNFiles.files;
+
+        let newPost = parsePostData(fields);
+
+        // Get the path to the resource
+        let locationUri = "";
+
+        if (files.postData)
+            locationUri = files.postData.path;
+
+        newPost.locationUri = locationUri;
+        let savedPost = yield savePost(newPost);
+
+        return sendResult(res , savedPost);
+    })();
+
 });
 
 router.get('/', function (req, res) {
@@ -56,7 +60,7 @@ router.get('/', function (req, res) {
     let appId = req.body.appId;
 
     // Use generator functions for getting posts and comments and likes
-    bluebird.coroutine(function *(){
+    bluebird.coroutine(function *() {
         // Get the posts array based on app id
         let posts = yield Post.find({appId: appId, timeStamp: {$lt: timeStamp}}).sort({timeStamp: 1}).exec();
 
@@ -78,20 +82,76 @@ router.get('/', function (req, res) {
 
         // Now merge the results from the arrays
         let responseArray = posts.map(function (post, idx) {
-           return {
-               userId : post.userId,
-               mimeType : post.mimeType,
-               timeStamp : post.timeStamp,
-               locationUri : post.locationUri,
-               description : post.description,
-               comments : comments[idx],
-               likes : likes[idx]
-           };
+            return {
+                userId: post.userId,
+                mimeType: post.mimeType,
+                timeStamp: post.timeStamp,
+                locationUri: post.locationUri,
+                description: post.description,
+                comments: comments[idx],
+                likes: likes[idx]
+            };
         });
 
         return res.json(responseArray);
 
     })();
 });
+
+// Helper functions
+function parsePostData(object) {
+
+    let appId = object.appId;
+    let userId = object.userId;
+    let mimeType = object.mimeType;
+    let timestamp = object.timeStamp;
+    let description = object.description;
+
+    let newPost = new Post();
+
+    newPost.appId = appId;
+    newPost.userId = userId;
+    newPost.mimeType = mimeType;
+    newPost.timestamp = timestamp;
+    newPost.description = description;
+    newPost.locationUri = locationUri;
+
+    return newPost;
+}
+
+function savePost(post) {
+    return post.save();
+}
+
+function parseForm(req) {
+
+    return new Promise(function (resolve, reject) {
+
+        let form = formidable.IncomingForm();
+
+        form.parse(req, function (error, fields, files) {
+            if (!error) {
+                let result = {
+                    fields: fields,
+                    files: files
+                };
+
+                resolve(result);
+            }
+            else {
+                reject(error);
+            }
+        });
+    });
+}
+
+function sendResult(res,post){
+    if(post){
+        res.json({message : "Successfully Posted"});
+    }
+    else{
+        res.json({message : "Some error occurred"});
+    }
+}
 
 module.exports = router;
