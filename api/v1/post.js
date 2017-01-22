@@ -7,6 +7,7 @@ let mongoose = require('mongoose');
 let Post = require('../../models/post');
 let Likes = require('../../models/likes');
 let Comments = require('../../models/comment');
+let Replies = require('../../models/replies');
 
 let router = express.Router();
 
@@ -76,33 +77,67 @@ router.get('/', function (req, res) {
         let posts = yield Post.find({appId: mongoose.Types.ObjectId(appId), timestamp: {$lt: timestamp}}).sort({timestamp: 1}).exec();
 
         // Map the post array to an array of promises each querying for comments
-        let commentsPromises = posts.map(function (post, idx) {
+        let commentsPromise = Promise.all(posts.map(function (post, idx) {
             return Comments.find({appId: appId, postId: post._id}).exec();
-        });
-
-        // Get the comments from commentsPromises
-        let comments = yield Promise.all(commentsPromises);
+        }));
 
         // Map the post array to likesPromises array similar to comments promises array
-        let likesPromises = posts.map(function (post, idx) {
+        let likesPromise = Promise.all(posts.map(function (post, idx) {
             return Likes.find({appId: appId, postId: post._id}).exec();
-        });
+        }));
+
+        // Get the comments from commentsPromises
+        let comments = yield commentsPromise;
 
         // Get the likes from likesPromises
-        let likes = yield Promise.all(likesPromises);
+        let likes = yield likesPromise;
 
-        // Now merge the results from the arrays
-        let responseArray = posts.map(function (post, idx) {
-            return {
-                userId: post.userId,
-                mimeType: post.mimeType,
-                timestamp: post.timestamp,
-                locationUri: post.locationUri,
-                description: post.description,
-                comments: comments[idx],
-                likes: likes[idx]
+        // For each comment find the replies and likes
+        let repliesPromise = Promise.all(comments.map(function (postComments) {
+            let promises = postComments.map(function (comment) {
+                return Replies.find({appId : appId , commentId : comment._id}).sort({timestamp : 1}).exec();
+            });
+            return Promise.all(promises);
+        }));
+
+        let commentLikesPromise = Promise.all(comments.map(function (postComments) {
+            let promises = postComments.map(function (comment) {
+                return Replies.find({appId : appId , commentId : comment._id}).sort({timestamp : 1}).exec();
+            });
+            return Promise.all(promises);
+        }));
+
+        let replies = yield repliesPromise;
+        let commentLikes = yield commentLikesPromise;
+
+        let responseArray = [];
+
+        for (let i=0 ; i <posts.length ; i++){
+
+            let post = {
+                userId: posts[i].userId,
+                mimeType: posts[i].mimeType,
+                timestamp: posts[i].timestamp,
+                locationUri: posts[i].locationUri,
+                description: posts[i].description,
+                likes : likes[i]
             };
-        });
+
+            post.comments = [];
+
+            for (let j =0 ; j< comments[i].length ; j++){
+                let comment = comments[i];
+
+                comment.replies = replies[i][j];
+                comment.likes = commentLikes[i][j];
+
+                post.comments.push(comment);
+            }
+
+            responseArray.push(post);
+        }
+
+        console.log(responseArray);
 
         return res.json(responseArray);
 

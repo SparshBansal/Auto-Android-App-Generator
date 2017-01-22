@@ -7,4 +7,4 @@ let comments_Likes_schema = Schema({
     commentId: {type: Schema.Types.ObjectId},
 });
 
-module.exports = comments_Likes_schema;
+module.exports = mongoose.model('commentLikes' , comments_Likes_schema);
