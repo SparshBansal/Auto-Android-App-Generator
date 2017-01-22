@@ -2,6 +2,7 @@ let express = require('express');
 let formidable = require('formidable');
 let bluebird = require('bluebird');
 let type = require('type-is');
+let mongoose = require('mongoose');
 
 let Post = require('../../models/post');
 let Likes = require('../../models/likes');
@@ -65,13 +66,14 @@ router.post("/", function (req, res, next) {
 
 router.get('/', function (req, res) {
 
-    let timeStamp = req.body.timeStamp;
+    let timestamp = req.body.timestamp;
     let appId = req.body.appId;
+
 
     // Use generator functions for getting posts and comments and likes
     bluebird.coroutine(function *() {
         // Get the posts array based on app id
-        let posts = yield Post.find({appId: appId, timeStamp: {$lt: timeStamp}}).sort({timeStamp: 1}).exec();
+        let posts = yield Post.find({appId: mongoose.Types.ObjectId(appId), timestamp: {$lt: timestamp}}).sort({timestamp: 1}).exec();
 
         // Map the post array to an array of promises each querying for comments
         let commentsPromises = posts.map(function (post, idx) {
@@ -94,7 +96,7 @@ router.get('/', function (req, res) {
             return {
                 userId: post.userId,
                 mimeType: post.mimeType,
-                timeStamp: post.timeStamp,
+                timestamp: post.timestamp,
                 locationUri: post.locationUri,
                 description: post.description,
                 comments: comments[idx],
@@ -113,7 +115,7 @@ function parsePostData(object) {
     let appId = object.appId;
     let userId = object.userId;
     let mimeType = object.mimeType;
-    let timestamp = object.timeStamp;
+    let timestamp = object.timestamp;
     let description = object.description;
 
     if (!appId) {
@@ -164,8 +166,6 @@ function parseForm(req) {
 function sendResult(res, post) {
     if (post) {
         res.json({message: "Successfully posted"});
-    }
-    else {
     }
 }
 

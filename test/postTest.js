@@ -15,7 +15,10 @@ let should = chai.should();
 chai.use(chai_http);
 
 describe("post", function () {
-    beforeEach(function (done) {
+
+    let appId;
+    let userId;
+    before(function (done) {
         Post.remove({}, function (error) {
             done();
         });
@@ -23,6 +26,10 @@ describe("post", function () {
 
     describe("POST /api/v1/post", function () {
         it("It should post the post with multimedia to the database", function (done) {
+
+            appId = mongoose.Types.ObjectId();
+            userId = mongoose.Types.ObjectId();
+
             fs.readFileAsync("C:\\Users\\SPARSH\\Desktop\\image.jpg").then(function (file) {
                 chai.request(server)
                     .post('/api/v1/post')
@@ -32,8 +39,8 @@ describe("post", function () {
                     .attach("postData", file, "cool_image")
 
                     // Have to add fields like this in case of multipart form data
-                    .field("appId", mongoose.Types.ObjectId().toString())
-                    .field("userId", mongoose.Types.ObjectId().toString())
+                    .field("appId", appId.toString())
+                    .field("userId", userId.toString())
                     .field("mimeType", "image")
                     .field("timestamp", Date.now().toString())
                     .field("description", "Here is a test post")
@@ -80,8 +87,8 @@ describe("post", function () {
         it("It should post the post without multimedia to the database", function (done) {
 
             let post = {
-                appId: mongoose.Types.ObjectId(),
-                userId: mongoose.Types.ObjectId(),
+                appId: appId,
+                userId: userId,
                 mimeType: "text",
                 timestamp: Date.now().toString(),
                 description: "Here is a text post"
@@ -145,6 +152,25 @@ describe("post", function () {
 
                     done();
                 });
+        });
+
+    });
+
+    describe("GET /api/v1/post" , function () {
+
+        it("It should get all the posts from the api" , function (done) {
+
+            chai.request(server)
+                .get('/api/v1/post')
+                .send({timestamp : Date.now() , appId : appId})
+                .end(function (error, res) {
+
+                    res.should.have.status(200);
+                    res.body.should.be.a("array");
+                    res.body.should.have.length.at.least(1);
+
+                    done();
+                })
         });
 
     });

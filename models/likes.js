@@ -7,4 +7,4 @@ let likesSchema = Schema({
     postId: {type: Schema.Types.ObjectId}
 });
 
-module.exports = likesSchema;
+module.exports = mongoose.model('likes' , likesSchema);
