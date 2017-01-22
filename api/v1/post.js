@@ -15,15 +15,18 @@ router.post("/", function (req, res, next) {
     // this is a plain post request without any multimedia data , if it is a multipart request
     // then we let the next route handler handle this request.
 
-    let contentType = type(req , ['multipart/*']);
+    let contentType = type(req, ['multipart/*']);
 
     if (contentType !== 'multipart/form-data') {
         bluebird.coroutine(function *() {
+            try {
+                let newPost = parsePostData(req.body);
+                let savedPost = yield savePost(newPost);
 
-            let newPost = parsePostData(req.body);
-            let savedPost = yield savePost(newPost);
-
-            return sendResult(res,savedPost);
+                return sendResult(res, savedPost);
+            } catch (error) {
+                return sendError(res, error);
+            }
         })();
     }
     else {
@@ -34,26 +37,27 @@ router.post("/", function (req, res, next) {
 }, function (req, res) {
 
     bluebird.coroutine(function *() {
-        let fieldsNFiles = yield parseForm(req);
-
-        let fields = fieldsNFiles.fields;
-        let files = fieldsNFiles.files;
-
-        let newPost = parsePostData(fields);
-
-        // Get the path to the resource
-        let locationUri = "";
-
-        if (files.postData)
-            locationUri = files.postData.path;
-
-        newPost.locationUri = locationUri;
         try {
+            let fieldsNFiles = yield parseForm(req);
+
+            let fields = fieldsNFiles.fields;
+            let files = fieldsNFiles.files;
+
+            let newPost = parsePostData(fields);
+
+            // Get the path to the resource
+            let locationUri = "";
+
+            if (files.postData)
+                locationUri = files.postData.path;
+
+            newPost.locationUri = locationUri;
+
             let savedPost = yield savePost(newPost);
-            return sendResult(res , savedPost);
-        }
-        catch(e) {
-            console.log(e);
+            return sendResult(res, savedPost);
+
+        } catch (error) {
+            return sendError(res, error);
         }
     })();
 
@@ -112,6 +116,14 @@ function parsePostData(object) {
     let timestamp = object.timeStamp;
     let description = object.description;
 
+    if (!appId) {
+        throw {message: "appId not found"}
+    }
+
+    if (!userId) {
+        throw {message: "userId not found"}
+    }
+
     let newPost = new Post();
 
     newPost.appId = appId;
@@ -149,13 +161,15 @@ function parseForm(req) {
     });
 }
 
-function sendResult(res,post){
-    if(post){
-        res.json({message : "Successfully posted"});
+function sendResult(res, post) {
+    if (post) {
+        res.json({message: "Successfully posted"});
     }
-    else{
-        res.json({message : "Some error occurred"});
+    else {
     }
 }
 
+function sendError(res, error) {
+    res.json({message: error.message});
+}
 module.exports = router;

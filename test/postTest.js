@@ -50,6 +50,33 @@ describe("post", function () {
             });
         });
 
+        it("It should not post the post with multimedia without appId/userId to the database", function (done) {
+            fs.readFileAsync("C:\\Users\\SPARSH\\Desktop\\image.jpg").then(function (file) {
+                chai.request(server)
+                    .post('/api/v1/post')
+                    .set('content-type', "multipart/form-data")
+
+                    // Attach the test file
+                    .attach("postData", file, "cool_image")
+
+                    // Have to add fields like this in case of multipart form data
+                    .field("appId", mongoose.Types.ObjectId().toString())
+                    .field("mimeType", "image")
+                    .field("timestamp", Date.now().toString())
+                    .field("description", "Here is a test post")
+
+                    // Send the request
+                    .end(function (error, res) {
+                        res.should.have.status(200);
+                        res.body.should.be.a('object');
+                        res.body.should.have.property("message");
+                        res.body.message.should.be.eql("userId not found");
+
+                        done();
+                    });
+            });
+        });
+
         it("It should post the post without multimedia to the database", function (done) {
 
             let post = {
@@ -91,7 +118,30 @@ describe("post", function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property("message");
-                    res.body.message.should.be.eql("Some error occurred");
+                    res.body.message.should.be.eql("appId not found");
+
+                    done();
+                });
+        });
+
+        it("It should post the post without userId to the database", function (done) {
+
+            let post = {
+                appId: mongoose.Types.ObjectId(),
+                mimeType: "text",
+                timestamp: Date.now().toString(),
+                description: "Here is a text post"
+            };
+
+            chai.request(server)
+                .post('/api/v1/post')
+                .send(post)
+                // Send the request
+                .end(function (error, res) {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property("message");
+                    res.body.message.should.be.eql("userId not found");
 
                     done();
                 });
