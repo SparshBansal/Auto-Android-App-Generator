@@ -7,9 +7,109 @@ let mongoose = require('mongoose');
 let Post = require('../../models/post');
 let Likes = require('../../models/likes');
 let Comments = require('../../models/comment');
+let CommentsLikes = require('../../models/comments_likes');
+let CommentsReplies = require('../../models/replies');
 let Replies = require('../../models/replies');
 
 let router = express.Router();
+
+router.post("/likes",function (req,res) {
+    let appId = req.body.appId;
+    let userId = req.body.userId;
+    let postId = req.body.postId;
+
+    Likes.findOne({'postId': postId, 'userId': userId}).exec().then(function (like) {
+        if (like) {
+            Likes.findOne({'postId': postId, 'userId': userId}).remove().exec().then(function () {
+                return res.json({'message': 'remove like', 'statusCode': 200});
+            })
+        } else {
+            let newLike = new Likes();
+            newLike.appId = appId;
+            newLike.postId = postId;
+            newLike.userId = userId;
+            return newLike.save();
+        }
+    }).then(function (like) {
+        if (like) {
+            return res.json({
+                'message': 'Like Successfull',
+                statusCode: 200,
+                _id: like._id
+            });
+        }
+        return;
+    }).catch(function (error) {
+        console.log(error);
+        return res.json({
+            'message': "Like Failed , Server Error",
+            statusCode: 500
+        });
+    });
+});
+
+router.post("/comments",function (req,res) {
+    let appId = req.body.appId;
+    let userId = req.body.userId;
+    let postId = req.body.postId;
+    let comment = req.body.comment;
+    let timestamp = req.body.timestamp;
+    let commentId = req.body._id;
+
+    Comments.findOne({'_id': commentId}).exec().then(function (comment) {
+        if (comment) {
+            // have to update here
+            Comments.findOne({'_id': commentId}).remove().exec().then(function () {
+                let newComment = new Comments();
+                newComment.appId = appId;
+                newComment.postId = postId;
+                newComment.userId = userId;
+                newComment.timestamp = timestamp;
+                newComment.comment = comment;
+                newComment._id = commentId;
+                return newComment.save();
+            }).then(function (commment) {
+                return res.json({'message': 'Updated comment', 'statusCode': 200});
+            })
+        }else{
+            let newComment = new Comments();
+            newComment.appId = appId;
+            newComment.postId = postId;
+            newComment.userId = userId;
+            newComment.timestamp = timestamp;
+            newComment.comment = comment;
+            return newComment.save();
+        }
+
+    }).then(function (comment) {
+        if (user) {
+            return res.json({
+                'message': 'Comment Successfull',
+                statusCode: 200,
+                _id: user._id
+            });
+        }
+        return;
+    }).catch(function (error) {
+        console.log(error);
+        return res.json({
+            'message': "Comment Failed , Server Error",
+            statusCode: 500
+        });
+    });
+});
+
+router.post("/comments/likes",function (req, res) {
+    let userId = req.body.userId;
+    let commentId = req.body.commentId;
+    let postId = req.body.postId;
+
+    CommentsLikes.findOne({'userId':userId,'commentId': commentId,'postId':postId}).exec().then(function (commentLikes) {
+        if(commentLikes!=null){
+            CommentsLikes.findOne({'userId':userId,'commentId': commentId,'postId':postId}).remove().then()
+        }
+    })
+})
 
 router.post("/", function (req, res, next) {
 
