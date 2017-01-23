@@ -57,21 +57,12 @@ router.post("/comments",function (req,res) {
     let commentId = req.body._id;
 
     Comments.findOne({'_id': commentId}).exec().then(function (comment) {
+
         if (comment) {
-            // have to update here
-            Comments.findOne({'_id': commentId}).remove().exec().then(function () {
-                let newComment = new Comments();
-                newComment.appId = appId;
-                newComment.postId = postId;
-                newComment.userId = userId;
-                newComment.timestamp = timestamp;
-                newComment.comment = comment;
-                newComment._id = commentId;
-                return newComment.save();
-            }).then(function (commment) {
-                return res.json({'message': 'Updated comment', 'statusCode': 200});
-            })
+            // Update the comment text
+            return Comments.update({_id : mongoose.Types.ObjectId(commentId)}, {$set : {comment : commentText}}).exec();
         }else{
+
             let newComment = new Comments();
             newComment.appId = appId;
             newComment.postId = postId;
@@ -79,17 +70,17 @@ router.post("/comments",function (req,res) {
             newComment.timestamp = timestamp;
             newComment.comment = comment;
             return newComment.save();
+
         }
 
     }).then(function (comment) {
-        if (user) {
+        if (comment) {
             return res.json({
                 'message': 'Comment Successfull',
                 statusCode: 200,
-                _id: user._id
+                _id: comment._id
             });
         }
-        return;
     }).catch(function (error) {
         console.log(error);
         return res.json({
