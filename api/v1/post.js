@@ -18,41 +18,54 @@ router.post("/likes",function (req,res) {
     let userId = req.body.userId;
     let postId = req.body.postId;
 
-    Likes.findOne({'postId': postId, 'userId': userId}).exec().then(function (like) {
-        if (like) {
-            Likes.findOne({'postId': postId, 'userId': userId}).remove().exec().then(function () {
-                return res.json({'message': 'remove like', 'statusCode': 200});
-            })
-        } else {
-            let newLike = new Likes();
-            newLike.appId = appId;
-            newLike.postId = postId;
-            newLike.userId = userId;
-            return newLike.save();
-        }
-    }).then(function (like) {
-        if (like) {
+    let newLike = new Likes();
+    newLike.appId = appId;
+    newLike.postId = postId;
+    newLike.userId = userId;
+        return newLike.save()
+            .then(function (like) {
+                if (like) {
+                    return res.json({
+                        'message': 'Like Successfull',
+                        statusCode: 200,
+                        _id: like._id
+                    });
+                }
+
+        }).catch(function (error) {
+            console.log(error);
             return res.json({
-                'message': 'Like Successfull',
-                statusCode: 200,
-                _id: like._id
+                'message': "Like Failed , Server Error",
+                statusCode: 500
             });
-        }
-        return;
-    }).catch(function (error) {
-        console.log(error);
-        return res.json({
-            'message': "Like Failed , Server Error",
-            statusCode: 500
         });
-    });
+});
+
+router.post("/dislikes",function (req,res) {
+    let likeId = req.body._id;
+    Likes.find({'_id':likeId}).remove().exec()
+        .then(function (like) {
+            if (like) {
+                return res.json({
+                    'message': 'Like removed like',
+                    statusCode: 200,
+                });
+            }
+
+        }).catch(function (error) {
+            console.log(error);
+            return res.json({
+                'message': "Like Failed , Server Error",
+                statusCode: 500
+            });
+        });
 });
 
 router.post("/comments",function (req,res) {
     let appId = req.body.appId;
     let userId = req.body.userId;
     let postId = req.body.postId;
-    let comment = req.body.comment;
+    let commentText = req.body.comment;
     let timestamp = req.body.timestamp;
     let commentId = req.body._id;
 
@@ -90,17 +103,92 @@ router.post("/comments",function (req,res) {
     });
 });
 
-router.post("/comments/likes",function (req, res) {
+router.post("/comments/likes",function (req,res) {
+    let appId = req.body.appId;
     let userId = req.body.userId;
     let commentId = req.body.commentId;
-    let postId = req.body.postId;
 
-    CommentsLikes.findOne({'userId':userId,'commentId': commentId,'postId':postId}).exec().then(function (commentLikes) {
-        if(commentLikes!=null){
-            CommentsLikes.findOne({'userId':userId,'commentId': commentId,'postId':postId}).remove().then()
+    let newLike = new CommentsLikes();
+    newLike.appId = appId;
+    newLike.commentId = commentId;
+    newLike.userId = userId;
+    return newLike.save()
+        .then(function (like) {
+            if (like) {
+                return res.json({
+                    'message': 'Like Successfull',
+                    statusCode: 200,
+                    _id: like._id
+                });
+            }
+
+        }).catch(function (error) {
+            console.log(error);
+            return res.json({
+                'message': "Like Failed , Server Error",
+                statusCode: 500
+            });
+        });
+});
+
+router.post("/comment/dislikes",function (req,res) {
+    let commentLikeId = req.body._id;
+    CommentsLikes.find({'_id':commentLikeId}).remove().exec()
+        .then(function (like) {
+            if (like) {
+                return res.json({
+                    'message': 'Like removed like',
+                    statusCode: 200,
+                });
+            }
+
+        }).catch(function (error) {
+        console.log(error);
+        return res.json({
+            'message': "Like Failed , Server Error",
+            statusCode: 500
+        });
+    });
+});
+
+router.post("/comments/replies",function (req, res) {
+    let userId = req.body.userId;
+    let commentId = req.body.commentId;
+    let replyText = req.body.replies;
+    let timestamp = req.body.timestamp;
+    let repliesId = req.body._id;
+
+    CommentsReplies.findOne({'_id':repliesId}).exec().then(function (reply) {
+        if (reply) {
+            // Update the comment text
+            return CommentsReplies.update({_id : mongoose.Types.ObjectId(repliesId)}, {$set : {reply : replyText}}).exec();
+        }else{
+
+            let newComment = new Comments();
+            newComment.appId = appId;
+            newComment.commentId = commentId;
+            newComment.userId = userId;
+            newComment.timestamp = timestamp;
+            newComment.comment = comment;
+            return newComment.save();
+
         }
-    })
-})
+    }).then(function (reply) {
+        if(reply){
+            res.json({
+                'message': 'reply Succsessful',
+                statusCode : 200,
+                _id: repliesId
+            });
+        }
+    }).catch(function (error) {
+        console.log(error);
+        return res.json({
+            'message': "Comment Failed , Server Error",
+            statusCode: 500
+        });
+    });
+});
 
 router.post("/", function (req, res, next) {
 
