@@ -1,6 +1,7 @@
 let express = require('express');
 let formidable = require('formidable');
 let bluebird = require('bluebird');
+let path = require('path');
 let type = require('type-is');
 let mongoose = require('mongoose');
 
@@ -141,8 +142,9 @@ router.post("/", function (req, res, next) {
             // Get the path to the resource
             let locationUri = "";
 
-            if (files.postData)
-                locationUri = files.postData.path;
+            if (files.postData) {
+                locationUri = '192.168.0.105:3000/images/' + path.basename(files.postData.path);
+            }
 
             newPost.locationUri = locationUri;
 
@@ -158,8 +160,10 @@ router.post("/", function (req, res, next) {
 
 router.get('/', function (req, res) {
 
-    let timestamp = req.body.timestamp;
-    let appId = req.body.appId;
+    console.log(req.body);
+
+    let timestamp = Date.now();
+    let appId = mongoose.Types.ObjectId("587b2fff673c3a251c3478fe");
 
 
     // Use generator functions for getting posts and comments and likes
@@ -206,6 +210,7 @@ router.get('/', function (req, res) {
         for (let i=0 ; i <posts.length ; i++){
 
             let post = {
+                _id :posts[i]._id,
                 userId: posts[i].userId,
                 mimeType: posts[i].mimeType,
                 timestamp: posts[i].timestamp,
@@ -237,6 +242,8 @@ router.get('/', function (req, res) {
 
 // Helper functions
 function parsePostData(object) {
+
+    console.log(object);
 
     let appId = object.appId;
     let userId = object.userId;
@@ -271,7 +278,9 @@ function parseForm(req) {
 
     return new Promise(function (resolve, reject) {
 
-        let form = formidable.IncomingForm();
+        let form = formidable.IncomingForm({
+            uploadDir : 'C:\\Users\\SPARSH\\WebstormProjects\\AutoAppGenerator\\public\\images'
+        });
 
         form.parse(req, function (error, fields, files) {
             if (!error) {
