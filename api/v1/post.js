@@ -4,7 +4,7 @@ let bluebird = require('bluebird');
 let path = require('path');
 let type = require('type-is');
 let mongoose = require('mongoose');
-
+let fs = require('fs');
 let Post = require('../../models/post');
 let Likes = require('../../models/likes');
 let Comments = require('../../models/comment');
@@ -14,7 +14,7 @@ let Replies = require('../../models/replies');
 
 let router = express.Router();
 
-router.post("/likes",function (req,res) {
+router.post("/likes", function (req, res) {
     let appId = req.body.appId;
     let userId = req.body.userId;
     let postId = req.body.postId;
@@ -49,7 +49,7 @@ router.post("/likes",function (req,res) {
     });
 });
 
-router.post("/comments",function (req,res) {
+router.post("/comments", function (req, res) {
     let appId = req.body.appId;
     let userId = req.body.userId;
     let postId = req.body.postId;
@@ -61,8 +61,8 @@ router.post("/comments",function (req,res) {
 
         if (comment) {
             // Update the comment text
-            return Comments.update({_id : mongoose.Types.ObjectId(commentId)}, {$set : {comment : commentText}}).exec();
-        }else{
+            return Comments.update({_id: mongoose.Types.ObjectId(commentId)}, {$set: {comment: commentText}}).exec();
+        } else {
 
             let newComment = new Comments();
             newComment.appId = appId;
@@ -91,14 +91,18 @@ router.post("/comments",function (req,res) {
     });
 });
 
-router.post("/comments/likes",function (req, res) {
+router.post("/comments/likes", function (req, res) {
     let userId = req.body.userId;
     let commentId = req.body.commentId;
     let postId = req.body.postId;
 
-    CommentsLikes.findOne({'userId':userId,'commentId': commentId,'postId':postId}).exec().then(function (commentLikes) {
-        if(commentLikes!=null){
-            CommentsLikes.findOne({'userId':userId,'commentId': commentId,'postId':postId}).remove().then()
+    CommentsLikes.findOne({
+        'userId': userId,
+        'commentId': commentId,
+        'postId': postId
+    }).exec().then(function (commentLikes) {
+        if (commentLikes != null) {
+            CommentsLikes.findOne({'userId': userId, 'commentId': commentId, 'postId': postId}).remove().then()
         }
     })
 })
@@ -143,8 +147,9 @@ router.post("/", function (req, res, next) {
             let locationUri = "";
 
             if (files.postData) {
-                locationUri = '192.168.0.105:3000/images/' + path.basename(files.postData.path);
+                locationUri = '192.168.0.105:3080/images/' + path.basename(files.postData.name);
             }
+            console.log(locationUri);
 
             newPost.locationUri = locationUri;
 
@@ -159,17 +164,22 @@ router.post("/", function (req, res, next) {
 });
 
 router.get('/', function (req, res) {
-
+    console.log("Got the request");
     console.log(req.body);
 
     let timestamp = Date.now();
-    let appId = mongoose.Types.ObjectId("587b2fff673c3a251c3478fe");
+    let appId = req.query.appId;
+
+    console.log(appId);
 
 
     // Use generator functions for getting posts and comments and likes
     bluebird.coroutine(function *() {
         // Get the posts array based on app id
-        let posts = yield Post.find({appId: mongoose.Types.ObjectId(appId), timestamp: {$lt: timestamp}}).sort({timestamp: 1}).exec();
+        let posts = yield Post.find({
+            appId: mongoose.Types.ObjectId(appId),
+            timestamp: {$lt: timestamp}
+        }).sort({timestamp: 1}).exec();
 
         // Map the post array to an array of promises each querying for comments
         let commentsPromise = Promise.all(posts.map(function (post, idx) {
@@ -190,14 +200,14 @@ router.get('/', function (req, res) {
         // For each comment find the replies and likes
         let repliesPromise = Promise.all(comments.map(function (postComments) {
             let promises = postComments.map(function (comment) {
-                return Replies.find({appId : appId , commentId : comment._id}).sort({timestamp : 1}).exec();
+                return Replies.find({appId: appId, commentId: comment._id}).sort({timestamp: 1}).exec();
             });
             return Promise.all(promises);
         }));
 
         let commentLikesPromise = Promise.all(comments.map(function (postComments) {
             let promises = postComments.map(function (comment) {
-                return Replies.find({appId : appId , commentId : comment._id}).sort({timestamp : 1}).exec();
+                return Replies.find({appId: appId, commentId: comment._id}).sort({timestamp: 1}).exec();
             });
             return Promise.all(promises);
         }));
@@ -207,21 +217,21 @@ router.get('/', function (req, res) {
 
         let responseArray = [];
 
-        for (let i=0 ; i <posts.length ; i++){
+        for (let i = 0; i < posts.length; i++) {
 
             let post = {
-                _id :posts[i]._id,
+                _id: posts[i]._id,
                 userId: posts[i].userId,
                 mimeType: posts[i].mimeType,
                 timestamp: posts[i].timestamp,
                 locationUri: posts[i].locationUri,
                 description: posts[i].description,
-                likes : likes[i]
+                likes: likes[i]
             };
 
             post.comments = [];
 
-            for (let j =0 ; j< comments[i].length ; j++){
+            for (let j = 0; j < comments[i].length; j++) {
                 let comment = comments[i];
 
                 comment.replies = replies[i][j];
@@ -239,6 +249,7 @@ router.get('/', function (req, res) {
 
     })();
 });
+
 
 // Helper functions
 function parsePostData(object) {
@@ -279,7 +290,7 @@ function parseForm(req) {
     return new Promise(function (resolve, reject) {
 
         let form = formidable.IncomingForm({
-            uploadDir : 'C:\\Users\\SPARSH\\WebstormProjects\\AutoAppGenerator\\public\\images'
+            uploadDir: 'C:\\Users\\SPARSH\\WebstormProjects\\AutoAppGenerator\\public\\images'
         });
 
         form.parse(req, function (error, fields, files) {
@@ -288,7 +299,8 @@ function parseForm(req) {
                     fields: fields,
                     files: files
                 };
-
+                fs.rename(files.postData.path, 'C:\\Users\\SPARSH\\WebstormProjects\\AutoAppGenerator\\public\\images\\'
+                    + files.postData.name);
                 resolve(result);
             }
             else {
