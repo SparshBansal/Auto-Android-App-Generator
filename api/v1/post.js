@@ -147,7 +147,7 @@ router.post("/", function (req, res, next) {
             let locationUri = "";
 
             if (files.postData) {
-                locationUri = '192.168.0.105:3080/images/' + path.basename(files.postData.name);
+                locationUri = 'http://223.179.128.215/images/' + path.basename(files.postData.name);
             }
             console.log(locationUri);
 
@@ -164,8 +164,6 @@ router.post("/", function (req, res, next) {
 });
 
 router.get('/', function (req, res) {
-    console.log("Got the request");
-    console.log(req.body);
 
     let timestamp = Date.now();
     let appId = req.query.appId;
@@ -254,8 +252,6 @@ router.get('/', function (req, res) {
 // Helper functions
 function parsePostData(object) {
 
-    console.log(object);
-
     let appId = object.appId;
     let userId = object.userId;
     let mimeType = object.mimeType;
@@ -290,7 +286,7 @@ function parseForm(req) {
     return new Promise(function (resolve, reject) {
 
         let form = formidable.IncomingForm({
-            uploadDir: 'C:\\Users\\SPARSH\\WebstormProjects\\AutoAppGenerator\\public\\images'
+            uploadDir: '/home/sparsh/WebstormProjects/Auto-Android-App-Generator/public/images/'
         });
 
         form.parse(req, function (error, fields, files) {
@@ -299,7 +295,7 @@ function parseForm(req) {
                     fields: fields,
                     files: files
                 };
-                fs.rename(files.postData.path, 'C:\\Users\\SPARSH\\WebstormProjects\\AutoAppGenerator\\public\\images\\'
+                fs.rename(files.postData.path, '/home/sparsh/WebstormProjects/Auto-Android-App-Generator/public/images/'
                     + files.postData.name);
                 resolve(result);
             }
