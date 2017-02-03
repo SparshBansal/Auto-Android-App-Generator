@@ -156,13 +156,15 @@ describe("post", function () {
 
     });
 
-    describe("GET /api/v1/post" , function () {
+    describe("GET /api/v1/post/appId" , function () {
 
         it("It should get all the posts from the api" , function (done) {
 
+            let url = "/api/v1/post?appId="+appId;
+            console.log(url);
+
             chai.request(server)
-                .get('/api/v1/post')
-                .send({timestamp : Date.now() , appId : appId})
+                .get(url)
                 .end(function (error, res) {
 
                     res.should.have.status(200);
