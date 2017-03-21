@@ -19,7 +19,7 @@ router.get('/', function (req, res) {
 
         // Map the invitee id to an array of promises each querying for invitee details
         let inviteeDetailPromise = Promise.all(Invitee.map(function (invitee, idx) {
-            return User.find({postId: invitee.inviteeId}).exec();
+            return User.find({_id: invitee.inviteeId}).exec();
         }));
 
         // Get the invitee detail from inviteeDetailPromise
@@ -32,7 +32,7 @@ router.get('/', function (req, res) {
             let newInvitee = {
                 Invitee_Name: inviteeDetail[i].name,
                 Invitee_Dp: inviteeDetail[i].dp,
-                Invitee_Going: invitees[i].going,
+                Invitee_Going: inviteeDetail[i].going,
             };
             responseArray.push(newInvitee);
         }
