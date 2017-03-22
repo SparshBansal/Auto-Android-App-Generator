@@ -1,8 +1,9 @@
 let express = require('express');
 let Invitee = require('../../models/invitee.js');
 let User = require('../../models/user');
+let bluebird = require('bluebird');
 
-let router = express.router();
+let router = express.Router();
 
 router.get('/', function (req, res) {
 
@@ -14,7 +15,7 @@ router.get('/', function (req, res) {
     bluebird.coroutine(function *() {
         // Get the invitee id based on app id
         let invitees = yield Invitee.find({
-            appId: mongoose.Types.ObjectId(appId)}
+            appId: mongoose.Types.ObjectId(appId)
         }).exec();
 
         // Map the invitee id to an array of promises each querying for invitee details
@@ -32,7 +33,7 @@ router.get('/', function (req, res) {
             let newInvitee = {
                 Invitee_Name: inviteeDetail[i].name,
                 Invitee_Dp: inviteeDetail[i].dp,
-                Invitee_Going: inviteeDetail[i].going,
+                Invitee_Going: invitees[i].going,
             };
             responseArray.push(newInvitee);
         }
