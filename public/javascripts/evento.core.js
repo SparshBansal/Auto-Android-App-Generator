@@ -1,89 +1,100 @@
-$(document).ready(function(){
+$(document).ready(function () {
 
-	/************************ GLIDE *****************************************************************8*/
+    /************************ GLIDE *****************************************************************8*/
 
-	// Initiate glide
-	$("#Glide").glide({
-	  type: "carousel"
-	});
-
-
-	/************************ SMOOTH SCROLL *****************************************************************8*/
-
-	// Callback when smooth scroll finishes , use it for animations and other stuff
-	callback = function(anchor,toggle){
-
-	};
-
-	// Initiate Smooth scroll
-	smoothScroll.init({
-		selector: '[data-scroll]', // Selector for links (must be a class, ID, data attribute, or element tag)
-		selectorHeader: null, // Selector for fixed headers (must be a valid CSS selector) [optional]
-		speed: 500, // Integer. How fast to complete the scroll in milliseconds
-		easing: 'easeInOutCubic', // Easing pattern to use
-		offset: 0, // Integer or Function returning an integer. How far to offset the scrolling anchor location in pixels
-		callback: callback // Function to run after scrolling
-	});
-
-	/****************** DIMMER BLUR ***************************************************************************/
-	$('.special.card .div').dimmer({
-		on : 'hover'
-	});
+    // Initiate glide
+    $("#Glide").glide({
+        type: "carousel"
+    });
 
 
-	/************************ EVENT LISTENERS *****************************************************************8*/
+    /************************ SMOOTH SCROLL *****************************************************************8*/
+
+    // Callback when smooth scroll finishes , use it for animations and other stuff
+    callback = function (anchor, toggle) {
+
+    };
+
+    // Initiate Smooth scroll
+    smoothScroll.init({
+        selector: '[data-scroll]', // Selector for links (must be a class, ID, data attribute, or element tag)
+        selectorHeader: null, // Selector for fixed headers (must be a valid CSS selector) [optional]
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 0, // Integer or Function returning an integer. How far to offset the scrolling anchor location in pixels
+        callback: callback // Function to run after scrolling
+    });
+
+    /****************** DIMMER BLUR ***************************************************************************/
+    $('.special.card .div').dimmer({
+        on: 'hover'
+    });
 
 
-	// Add on click listener for get started button
-	// Clicking that button smooth scrolls to event selection fragment of the page
-	$("#b_started").click(function(){
+    /************************ EVENT LISTENERS *****************************************************************8*/
 
-		console.log("Button Clicked!!");
-		smoothScroll.animateScroll(document.querySelector("#event_selection"));
-	});
 
-	// $('#b_next').click(function() {
-	// 	 event.preventDefault();
-	// 	 $('#evento_section').animate({
-	// 		 scrollLeft: "+=300px"
-	// 	 }, "slow");
-	// });
+    // Add on click listener for get started button
+    // Clicking that button smooth scrolls to event selection fragment of the page
+    $("#b_started").click(function () {
+
+        console.log("Button Clicked!!");
+        smoothScroll.animateScroll(document.querySelector("#event_selection"));
+    });
+
+    // $('#b_next').click(function() {
+    // 	 event.preventDefault();
+    // 	 $('#evento_section').animate({
+    // 		 scrollLeft: "+=300px"
+    // 	 }, "slow");
+    // });
+
+    $('.ui.form').form({
+        fields: {
+            email: {
+                identifier: 'email',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: 'Please enter your e-mail'
+                    },
+                    {
+                        type: 'email',
+                        prompt: 'Please enter a valid e-mail'
+                    }
+                ]
+            },
+            password: {
+                identifier: 'password',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: 'Please enter your password'
+                    },
+                    {
+                        type: 'length[6]',
+                        prompt: 'Your password must be at least 6 characters'
+                    }
+                ]
+            }
+        }
+    });
+
+    $('#wedding-card').click(function () {
+        window.location.href = '/create/wedding';
+    });
+
+
+    $('#corporate-card').click(function () {
+        window.location.href = '/create/corporate';
+    });
+
+    $('#fest-card').click(function () {
+        window.location.href = '/create/fest';
+    });
+
+    $('#birthday-card').click(function () {
+        window.location.href = '/create/birthday';
+    });
 
 });
-
-$(document)
-	.ready(function() {
-		$('.ui.form')
-			.form({
-				fields: {
-					email: {
-						identifier  : 'email',
-						rules: [
-							{
-								type   : 'empty',
-								prompt : 'Please enter your e-mail'
-							},
-							{
-								type   : 'email',
-								prompt : 'Please enter a valid e-mail'
-							}
-						]
-					},
-					password: {
-						identifier  : 'password',
-						rules: [
-							{
-								type   : 'empty',
-								prompt : 'Please enter your password'
-							},
-							{
-								type   : 'length[6]',
-								prompt : 'Your password must be at least 6 characters'
-							}
-						]
-					}
-				}
-			})
-		;
-	})
-;

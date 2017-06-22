@@ -35,60 +35,60 @@
 <!-- =============== LOCAL LOGIN FORM =================== -->
 
 <div style="padding-top: 8em">
-<div class="ui middle aligned center aligned grid">
-  <div class="five wide column">
-<form action="/login" method="POST" class="ui large form">
-  <div class="ui stacked secondary  segment">
-    <h2 class="ui image header">
-      <div class="content">
-        Log-in to your account
-        <br>
-      </div>
-    </h2>
-    <div class="field">
-      <div class="ui left icon input">
-            <i class="user icon"></i>
-            <input type="text" name="email" placeholder="Email">
-      </div>
+    <div class="ui middle aligned center aligned grid">
+        <div class="five wide column">
+            <form action="/login" method="POST" class="ui large form">
+                <div class="ui stacked secondary  segment">
+                    <h2 class="ui image header">
+                        <div class="content">
+                            Log-in to your account
+                            <br>
+                        </div>
+                    </h2>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" name="email" placeholder="Email">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="password" placeholder="Password">
+                        </div>
+                    </div>
+                    <div class="ui fluid large teal submit button">
+                        Login
+                    </div>
+                </div>
+            </form>
+
+            <div class="ui message">
+                New to us? <a href="/signup">Register</a>
+            </div>
+
+            <div class="row">
+                <!-- ============== GOOGLE LOGIN BUTTON ================== -->
+                <br>
+                <form action="/login/google" method="GET">
+                    <button class="loginBtn loginBtn--google" style="box-shadow: 2px 3px 5px #888888">
+                        Login with Google
+                    </button>
+
+                </form>
+                <br>
+                <!-- ============== FACEBOOK LOGIN BUTTON ================== -->
+                <form action="/login/Facebook" method="GET">
+                    <button class="loginBtn loginBtn--facebook" style="box-shadow: 2px 3px 5px #888888">
+                        Login with Facebook
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
     </div>
-    <div class="field">
-      <div class="ui left icon input">
-        <i class="lock icon"></i>
-        <input type="password" name="password" placeholder="Password">
-      </div>
-    </div>
-    <div class="ui fluid large teal submit button">
-      Login
-    </div>
-  </div>
-</form>
-
-  <div class="ui message">
-     New to us? <a href="/signup">Register</a>
-  </div>
-
-  <div class="row">
-    <!-- ============== GOOGLE LOGIN BUTTON ================== -->
-    <br>
-    <form action="/login/google" method="GET">
-        <button class="loginBtn loginBtn--google" style="box-shadow: 2px 3px 5px #888888">
-              Login with Google
-        </button>
-
-    </form>
-    <br>
-    <!-- ============== FACEBOOK LOGIN BUTTON ================== -->
-    <form action="/login/Facebook" method="GET">
-        <button class="loginBtn loginBtn--facebook" style="box-shadow: 2px 3px 5px #888888">
-            Login with Facebook
-        </button>
-
-    </form>
-
-  </div>
-
- </div>
-</div>
 
 
 </div>

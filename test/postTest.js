@@ -156,11 +156,11 @@ describe("post", function () {
 
     });
 
-    describe("GET /api/v1/post/appId" , function () {
+    describe("GET /api/v1/post/appId", function () {
 
-        it("It should get all the posts from the api" , function (done) {
+        it("It should get all the posts from the api", function (done) {
 
-            let url = "/api/v1/post?appId="+appId;
+            let url = "/api/v1/post?appId=" + appId;
             console.log(url);
 
             chai.request(server)

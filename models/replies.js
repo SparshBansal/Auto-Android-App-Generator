@@ -2,7 +2,7 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 let repliesSchema = Schema({
-	userId: {type: Schema.Types.ObjectId},
+    userId: {type: Schema.Types.ObjectId},
     appId: {type: Schema.Types.ObjectId},
     commentId: {type: Schema.Types.ObjectId},
     replies: {type: String, required: true},
@@ -10,4 +10,4 @@ let repliesSchema = Schema({
     likes: {type: []}
 });
 
-module.exports = mongoose.model('replies' , repliesSchema);
+module.exports = mongoose.model('replies', repliesSchema);

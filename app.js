@@ -38,7 +38,7 @@ mongoose.connect(config.DBHost);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-if(config.util.getEnv('NODE_ENV') !== 'test') {
+if (config.util.getEnv('NODE_ENV') !== 'test') {
     app.use(logger('dev'));
 }
 app.use(bodyParser.json());
@@ -60,7 +60,7 @@ app.use('/users', users);
 app.use('/login', login);
 app.use('/signup', signup);
 
-app.use('/createApp', createApp);
+app.use('/create', createApp);
 
 app.use('/api/v1', api);
 // catch 404 and forward to error handler

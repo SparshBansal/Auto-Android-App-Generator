@@ -9,8 +9,8 @@ let eventSchema = mongoose.Schema({
     imageUri: {type: String},
     videoUri: {type: String},
     locationCoordinates: {
-      lat: {type: Number},
-      long: {type: Number}
+        lat: {type: Number},
+        long: {type: Number}
     }
 });
 

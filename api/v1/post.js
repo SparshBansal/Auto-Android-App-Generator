@@ -23,33 +23,13 @@ router.post("/likes", function (req, res) {
     newLike.appId = appId;
     newLike.postId = postId;
     newLike.userId = userId;
-        return newLike.save()
-            .then(function (like) {
-                if (like) {
-                    return res.json({
-                        'message': 'Like Successfull',
-                        statusCode: 200,
-                        _id: like._id
-                    });
-                }
-
-        }).catch(function (error) {
-            console.log(error);
-            return res.json({
-                'message': "Like Failed , Server Error",
-                statusCode: 500
-            });
-        });
-});
-
-router.post("/dislikes",function (req,res) {
-    let likeId = req.body._id;
-    Likes.find({'_id':likeId}).remove().exec()
+    return newLike.save()
         .then(function (like) {
             if (like) {
                 return res.json({
-                    'message': 'Like removed like',
+                    'message': 'Like Successfull',
                     statusCode: 200,
+                    _id: like._id
                 });
             }
 
@@ -60,6 +40,26 @@ router.post("/dislikes",function (req,res) {
                 statusCode: 500
             });
         });
+});
+
+router.post("/dislikes", function (req, res) {
+    let likeId = req.body._id;
+    Likes.find({'_id': likeId}).remove().exec()
+        .then(function (like) {
+            if (like) {
+                return res.json({
+                    'message': 'Like removed like',
+                    statusCode: 200,
+                });
+            }
+
+        }).catch(function (error) {
+        console.log(error);
+        return res.json({
+            'message': "Like Failed , Server Error",
+            statusCode: 500
+        });
+    });
 });
 
 router.post("/comments", function (req, res) {
@@ -130,9 +130,9 @@ router.post("/comments/likes", function (req, res) {
         });
 });
 
-router.post("/comment/dislikes",function (req,res) {
+router.post("/comment/dislikes", function (req, res) {
     let commentLikeId = req.body._id;
-    CommentsLikes.find({'_id':commentLikeId}).remove().exec()
+    CommentsLikes.find({'_id': commentLikeId}).remove().exec()
         .then(function (like) {
             if (like) {
                 return res.json({
@@ -150,18 +150,18 @@ router.post("/comment/dislikes",function (req,res) {
     });
 });
 
-router.post("/comments/replies",function (req, res) {
+router.post("/comments/replies", function (req, res) {
     let userId = req.body.userId;
     let commentId = req.body.commentId;
     let replyText = req.body.replies;
     let timestamp = req.body.timestamp;
     let repliesId = req.body._id;
 
-    CommentsReplies.findOne({'_id':repliesId}).exec().then(function (reply) {
+    CommentsReplies.findOne({'_id': repliesId}).exec().then(function (reply) {
         if (reply) {
             // Update the comment text
-            return CommentsReplies.update({_id : mongoose.Types.ObjectId(repliesId)}, {$set : {reply : replyText}}).exec();
-        }else{
+            return CommentsReplies.update({_id: mongoose.Types.ObjectId(repliesId)}, {$set: {reply: replyText}}).exec();
+        } else {
 
             let newComment = new Comments();
             newComment.appId = appId;
@@ -172,10 +172,10 @@ router.post("/comments/replies",function (req, res) {
             return newComment.save();
         }
     }).then(function (reply) {
-        if(reply){
+        if (reply) {
             res.json({
                 'message': 'reply Succsessful',
-                statusCode : 200,
+                statusCode: 200,
                 _id: repliesId
             });
         }

@@ -12,16 +12,29 @@ let Application = require('../models/application');
 
 let router = express.Router();
 
-router.use(function (req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/');
-});
-
-router.get('/', function (req, res, next) {
+/*router.use(function (req, res, next) {
+ if (req.isAuthenticated()) {
+ return next();
+ }
+ res.redirect('/');
+ });
+ */
+router.get('/wedding', function (req, res, next) {
     return res.render('createApp.ejs', {user: req.user});
 });
+
+router.get('/birthday', function (req, res, next) {
+    return res.render('createApp.ejs', {user: req.user});
+});
+
+router.get('/fest', function (req, res, next) {
+    return res.render('createApp.ejs', {user: req.user});
+});
+
+router.get('/corporate', function (req, res, next) {
+    return res.render('createApp.ejs', {user: req.user});
+});
+
 
 router.post('/', function (req, res, next) {
 
