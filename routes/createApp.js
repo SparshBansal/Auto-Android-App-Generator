@@ -5,6 +5,8 @@ let express = require('express');
 let cmd = require('node-cmd');
 let fs = require('fs');
 
+let bluebird = require('bluebird');
+
 // import the models
 let Application = require('../models/application');
 
@@ -57,9 +59,12 @@ router.post('/', function (req, res, next) {
 
     });
 
-    newApplication.save().then(function (application) {  /* Constructing the application now */
+    bluebird.coroutine(function *() {
 
-        return new Promise(function (resolve, reject) {
+        let application = yield newApplication.save();
+
+        // Run initialization script
+        let init_log_data = yield new Promise(function (resolve, reject) {
 
             console.log("Running initialization script");
             // Run initialization Script!!!
@@ -69,25 +74,19 @@ router.post('/', function (req, res, next) {
             });
 
         });
+        console.log(init_log_data);
 
-    }).then(function (application) {
-
-        let stringToWrite = JSON.stringify(application.properties);
-
-        return new Promise(function (resolve, reject) {
-            fs.writeFile(projectDir + "/app/src/main/assets/data.json", stringToWrite, function (error) {
-                if (error) {
-                    console.log("error", error);
-                    reject(error);
-                }
-                resolve(application);
-            });
+        // Write the file
+        yield fs.writeFile(projectDir + "/app/src/main/assets/data.json", stringToWrite, function (error) {
+            if (error) {
+                console.log("error", error);
+                reject(error);
+            }
+            resolve(application);
         });
 
-    }).then(function (application) {
-
         // Run copy_replace script
-        return new Promise(function (resolve, reject) {
+        let copy_log_data = yield new Promise(function (resolve, reject) {
 
             let destinationFile = projectDir + '/app/src/main/res/layout/activity_main.xml';
             let sourceFile = "";
@@ -103,20 +102,21 @@ router.post('/', function (req, res, next) {
                 resolve(log);
             });
         });
-
-    }).then(function (log) {
+        console.log(copy_log_data);
 
         // Run build_app script to finally build the application
-        return new Promise(function (resolve, reject) {
+        let build_log_data = yield new Promise(function (resolve, reject) {
             cmd.get("./shell_scripts/build_app.sh " + projectDir, function (log) {
                 console.log(log);
+                resolve(log);
             });
         });
-    }).catch(function (error) {
+        console.log(build_log_data);
 
-        console.log(error);
+        // Respond with the apk
 
-    });
+    })();
+
 });
 
 module.exports = router;

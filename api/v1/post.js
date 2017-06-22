@@ -228,7 +228,7 @@ router.post("/", function (req, res, next) {
             let locationUri = "";
 
             if (files.postData) {
-                locationUri = 'http://223.179.128.215/images/' + path.basename(files.postData.name);
+                locationUri = 'http://223.179.128.215/feed_media/' + path.basename(files.postData.name);
             }
             console.log(locationUri);
 
@@ -367,7 +367,7 @@ function parseForm(req) {
     return new Promise(function (resolve, reject) {
 
         let form = formidable.IncomingForm({
-            uploadDir: '/home/sparsh/WebstormProjects/Auto-Android-App-Generator/public/images/'
+            uploadDir: '/home/sparsh/WebstormProjects/Auto-Android-App-Generator/public/feed_media/'
         });
 
         form.parse(req, function (error, fields, files) {
@@ -376,7 +376,8 @@ function parseForm(req) {
                     fields: fields,
                     files: files
                 };
-                fs.rename(files.postData.path, '/home/sparsh/WebstormProjects/Auto-Android-App-Generator/public/images/'
+
+                fs.rename(files.postData.path, '/home/sparsh/WebstormProjects/Auto-Android-App-Generator/public/feed_media/'
                     + files.postData.name);
                 resolve(result);
             }

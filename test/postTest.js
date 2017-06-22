@@ -30,7 +30,7 @@ describe("post", function () {
             appId = mongoose.Types.ObjectId();
             userId = mongoose.Types.ObjectId();
 
-            fs.readFileAsync("C:\\Users\\SPARSH\\Desktop\\image.jpg").then(function (file) {
+            fs.readFileAsync("/home/sparsh/Pictures/Screenshot from 2017-02-26 07:59:42.png").then(function (file) {
                 chai.request(server)
                     .post('/api/v1/post')
                     .set('content-type', "multipart/form-data")
@@ -58,13 +58,13 @@ describe("post", function () {
         });
 
         it("It should not post the post with multimedia without appId/userId to the database", function (done) {
-            fs.readFileAsync("C:\\Users\\SPARSH\\Desktop\\image.jpg").then(function (file) {
+            fs.readFileAsync("/home/sparsh/Pictures/Screenshot from 2017-02-26 07:59:42.png").then(function (file) {
                 chai.request(server)
                     .post('/api/v1/post')
                     .set('content-type', "multipart/form-data")
 
                     // Attach the test file
-                    .attach("postData", file, "cool_image")
+                    .attach("postData", file, "cool_image.png")
 
                     // Have to add fields like this in case of multipart form data
                     .field("appId", mongoose.Types.ObjectId().toString())
