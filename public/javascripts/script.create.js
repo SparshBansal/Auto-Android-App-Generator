@@ -48,7 +48,7 @@ $(document).ready(function(){
 
 
 	// now alter properties based on user selections
-	
+		
 
 });
 
