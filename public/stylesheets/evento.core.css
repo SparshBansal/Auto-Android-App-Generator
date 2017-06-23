@@ -4,11 +4,6 @@
     src: url("../fonts/Aileron-Thin.otf");
 }
 
-@font-face {
-    font-family: "Aileron-Italic";
-    src: url("../fonts/Aileron-LightItalic.otf");
-}
-
 /* ---------- Headers ----------------*/
 #main-header {
     font-family: "Aileron";
@@ -240,3 +235,5 @@
 .loginBtn--google:hover,
 .loginBtn--google:focus {
     background: #E74B37;
+}
+S

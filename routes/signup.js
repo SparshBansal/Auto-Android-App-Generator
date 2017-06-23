@@ -9,10 +9,17 @@ router.get('/', function (req, res, next) {
     console.log(mongoose.connection.readyState);
 });
 
-router.post('/', passport.authenticate('local-signup', {
-    successRedirect: '/createApp',
-    failureRedirect: '/signup',
-    failureFlash: true
-}));
+router.post('/', function (req, res, next) {
+        console.log("Got the signup request");
+        next();
+    },
+
+    // Authenticate with passport
+    passport.authenticate('local-signup', {
+        successRedirect: '/createApp',
+        failureRedirect: '/signup',
+        failureFlash: true
+    })
+);
 
 module.exports = router;

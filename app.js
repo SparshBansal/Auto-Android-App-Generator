@@ -5,6 +5,7 @@ let logger = require('morgan');
 let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
 let config = require('config');
+let flash = require('connect-flash');
 
 
 let session = require("express-session")({
@@ -45,6 +46,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash());
 
 
 app.use(session);
