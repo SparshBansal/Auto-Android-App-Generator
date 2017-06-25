@@ -33,12 +33,15 @@
 
 </head>
 <body>
+<!-- <div class="ui inverted button" id="b-signup" onclick="signIn()">Sign Up</div>
+<div class="ui inverted button" id="b-signin" onclick="signUp()">Sign Up</div> -->
 <!-- Raised Segment -->
 <div class="raised-segment">
 
     <!-- Carousel -->
     <div id="Glide" class="glide">
-        <div class="glide__wrapper" style="height: 100%;position: absolute; width:100%">
+
+        <div class="glide__wrapper" style="height: 100%;position: relative;">
             <ul class="glide__track">
                 <li class="glide__slide">
                     <img class="ui fluid image" style="height: 100%" src="images/wedding-1.jpeg">
@@ -56,23 +59,19 @@
                     <img class="ui fluid image" style="height: 100%" src="images/birthday.jpg"/>
                 </li>
             </ul>
-
         </div>
-        <!-- Login/Signup Buttons -->
-          <div class="four column row">
-            <div class="right floated column">
-              <div class="ui inverted button" id="b-signup" onclick="signUp()">Sign Up</div>
-              <div class="ui inverted button" id="b-signin" onclick="signIn()">Log In</div>
-            </div>
-          </div>
+
         <!-- <div class="glide__bullets" style="height: 0.1em"></div> -->
 
     </div>
 
-
     <!-- Scrim above the carousel to achieve more legibility -->
-      <div class="scrim"></div>
+    <div class="scrim"></div>
 </div>
+
+<!-- Login/Signup Buttons -->
+<div class="ui inverted button" id="b-signup" onclick="signUp()">Sign Up</div>
+<div class="ui inverted button" id="b-signin" onclick="signIn()">Log In</div>
 
 <!-- Header and Subheader -->
 <div class="ui one column centered grid header_container">
@@ -101,7 +100,8 @@
 
 <!-- Get Started button -->
 <div id="b_started_wrapper" style="text-align: center">
-    <div class="ui inverted button" id="b_started" >Get Started</div>
+    <div class="ui inverted button" id="b_started" style="display: inline-block;font-size: 1.5em;">Get Started
+    </div>
 </div>
 
 <div class="sub-header" id="event_selection">Choose your event</div>
@@ -127,11 +127,11 @@
                     </div>
                 </div>
                 <div class="content">
-                    <div class="header" style="text-align: center">
+                    <div class="header">
                         Wedding
                     </div>
                     <div class="description">
-                        Your wedding must be a perfect wedding. Make it memorable by creating a perfect application crafted according to your schedule.
+                        Your wedding is a perfect wedding, make it memorable by creating a perfect application
                     </div>
                 </div>
             </div>
@@ -154,11 +154,11 @@
                     </div>
                 </div>
                 <div class="content">
-                    <div class="header" style="text-align: center">
+                    <div class="header">
                         Corporate Party
                     </div>
                     <div class="description">
-                        Leave an impression on the fellow colleagues by creating a customized application for your corporate party.
+                        Leave an impression on the fellow colleagues by creating a customized application for your coporate party
                     </div>
                 </div>
             </div>
@@ -181,11 +181,11 @@
                     </div>
                 </div>
                 <div class="content">
-                    <div class="header" style="text-align: center">
+                    <div class="header">
                         Festival
                     </div>
                     <div class="description">
-                        Add life to your festival with custom tailored application to share the exhilarating experience with your dear ones.
+                        Add life to your festival with custom tailored application to share the exhilarating experiences
                     </div>
                 </div>
             </div>
@@ -199,7 +199,7 @@
                     <div class="ui dimmer">
                         <div class="content">
                             <div class="center">
-                                Base Price : It's Free!
+                                Base Price : It's Free
                             </div>
                         </div>
                     </div>
@@ -208,11 +208,11 @@
                     </div>
                 </div>
                 <div class="content">
-                    <div class="header" style="text-align: center">
+                    <div class="header">
                         Birthday
                     </div>
                     <div class="description">
-                        Celebrate your birthday and preserve the special moments with an app made especially for you by you.
+                        Celebrate your birthday and preserve the special moments with an app made especially for you by you
                     </div>
                 </div>
             </div>
