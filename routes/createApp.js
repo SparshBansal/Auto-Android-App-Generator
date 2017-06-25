@@ -1,6 +1,3 @@
-/**
- * Created by sparsh on 10/12/16.
- */
 let express = require('express');
 let cmd = require('node-cmd');
 let fs = require('fs');
@@ -8,6 +5,7 @@ let fs = require('fs');
 let bluebird = require('bluebird');
 
 // import the models
+let Themes = require('../models/internal/theme');
 let Application = require('../models/application');
 
 let router = express.Router();
@@ -20,19 +18,59 @@ let router = express.Router();
  });
  */
 router.get('/wedding', function (req, res, next) {
-    return res.render('createApp.ejs', {user: req.user});
+
+    // query the themes database for available themes
+    bluebird.coroutine(function*(){
+        try {
+            let themes = yield Themes.find({eventType: "wedding"}).exec();
+            return res.render('createApp.ejs', {user: req.user , themes : themes});
+        }catch (error){
+            console.log(error);
+            return res.render('createApp.ejs' , {user:req.user , themes : null});
+        }
+
+    })();
 });
 
 router.get('/birthday', function (req, res, next) {
-    return res.render('createApp.ejs', {user: req.user});
+
+    bluebird.coroutine(function*(){
+        try {
+            let themes = yield Themes.find({eventType: "wedding"}).exec();
+            return res.render('createApp.ejs', {user: req.user , themes : themes});
+        }catch (error){
+            console.log(error);
+            return res.render('createApp.ejs' , {user:req.user , themes : null});
+        }
+
+    })();
 });
 
+
 router.get('/fest', function (req, res, next) {
-    return res.render('createApp.ejs', {user: req.user});
+    bluebird.coroutine(function*(){
+        try {
+            let themes = yield Themes.find({eventType: "wedding"}).exec();
+            return res.render('createApp.ejs', {user: req.user , themes : themes});
+        }catch (error){
+            console.log(error);
+            return res.render('createApp.ejs' , {user:req.user , themes : null});
+        }
+
+    })();
 });
 
 router.get('/corporate', function (req, res, next) {
-    return res.render('createApp.ejs', {user: req.user});
+    bluebird.coroutine(function*(){
+        try {
+            let themes = yield Themes.find({eventType: "wedding"}).exec();
+            return res.render('createApp.ejs', {user: req.user , themes : themes});
+        }catch (error){
+            console.log(error);
+            return res.render('createApp.ejs' , {user:req.user , themes : null});
+        }
+
+    })();
 });
 
 
